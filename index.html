@@ -450,7 +450,7 @@
   <div class="topbar">
     <button class="topbar-back" onclick="goTo('s-parcelles')" aria-label="Retour aux parcelles"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
     <div><div class="topbar-title">Suivi des récoltes</div><div class="topbar-sub">Prévisions, lots et stockage</div></div>
-    <button class="topbar-action" onclick="showToast('Formulaire de récolte bientôt disponible')" aria-label="Ajouter une récolte"><span class="material-symbols-rounded" style="font-size:22px">add</span></button>
+    <button class="topbar-action" onclick="goTo('s-recolte-new')" aria-label="Ajouter une récolte"><span class="material-symbols-rounded" style="font-size:22px">add</span></button>
   </div>
   <div class="scroll-area">
     <div class="metric-grid" style="padding-top:14px">
@@ -477,6 +477,7 @@
     </div>
 
     <div class="section-label">Récoltes stockées</div>
+    <div id="harvest-user-records"></div>
     <div class="card">
       <div class="row">
         <span class="material-symbols-rounded row-icon">warehouse</span>
@@ -496,7 +497,7 @@
     </div>
 
     <div class="action-list">
-      <button class="action-btn" onclick="showToast('Formulaire de récolte bientôt disponible')"><span class="material-symbols-rounded action-btn-icon">add_circle</span>Enregistrer une récolte<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-recolte-new')"><span class="material-symbols-rounded action-btn-icon">add_circle</span>Enregistrer une récolte<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
       <button class="action-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded action-btn-icon">sell</span>Consulter les prix du marché<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
     </div>
   </div>
@@ -507,6 +508,54 @@
     <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
     <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
   </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     NOUVELLE RÉCOLTE
+══════════════════════════════════════ -->
+<section class="screen" id="s-recolte-new">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-recoltes')" aria-label="Retour au suivi des récoltes"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Enregistrer une récolte</div><div class="topbar-sub">Ajouter un lot au stockage</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="form-area">
+      <div class="form-row">
+        <label class="form-label" for="harvest-product">Produit récolté</label>
+        <select class="form-select" id="harvest-product">
+          <option>Maïs</option><option>Manioc</option><option>Riz</option>
+          <option>Haricots</option><option>Légumes</option><option>Œufs</option>
+          <option>Tilapia</option><option>Poisson-chat</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label" for="harvest-quantity">Quantité</label><input class="form-input" id="harvest-quantity" type="number" min="0" step="0.1" placeholder="ex: 250"></div>
+        <div><label class="form-label" for="harvest-unit">Unité</label><select class="form-select" id="harvest-unit"><option>kg</option><option>tonnes</option><option>unités</option><option>litres</option></select></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label" for="harvest-date">Date</label><input class="form-input" id="harvest-date" type="date" value="2026-05-05"></div>
+        <div><label class="form-label" for="harvest-quality">État</label><select class="form-select" id="harvest-quality"><option>Bon état</option><option>À sécher</option><option>À vendre rapidement</option></select></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="harvest-location">Parcelle / lieu de stockage</label>
+        <select class="form-select" id="harvest-location">
+          <option>Parcelle A1 — Maïs</option><option>Parcelle A2 — Riz</option>
+          <option>Parcelle B1 — Manioc</option><option>Magasin principal</option>
+          <option>Silo A</option><option>Vente directe</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="harvest-notes">Notes</label>
+        <textarea class="form-textarea" id="harvest-notes" placeholder="Qualité, lot, séchage ou destination..."></textarea>
+      </div>
+      <button class="form-btn" onclick="saveHarvest()">
+        <span class="material-symbols-rounded" style="font-size:20px">save</span>
+        Enregistrer la récolte
+      </button>
+      <button class="form-btn secondary" onclick="goTo('s-recoltes')">Annuler</button>
+    </div>
+  </div>
 </section>
 
 

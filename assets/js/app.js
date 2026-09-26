@@ -426,7 +426,45 @@ function saveSale() {
 }
 
 /* ──────────────────────────────────────────
-   10. CALENDRIER — Planifier un événement
+   10. RÉCOLTES — Enregistrer un lot
+────────────────────────────────────────── */
+
+function saveHarvest() {
+  const product = document.getElementById('harvest-product')?.value;
+  const quantity = parseFloat(document.getElementById('harvest-quantity')?.value) || 0;
+  const unit = document.getElementById('harvest-unit')?.value || 'kg';
+  const date = document.getElementById('harvest-date')?.value;
+  const quality = document.getElementById('harvest-quality')?.value || 'Bon état';
+  const location = document.getElementById('harvest-location')?.value || 'Magasin principal';
+  const notes = document.getElementById('harvest-notes')?.value?.trim() || '';
+
+  if (!product || !quantity || !date) {
+    showToast('Indiquez le produit, la quantité et la date', 'error');
+    return;
+  }
+
+  const harvests = JSON.parse(localStorage.getItem('harvests') || '[]');
+  harvests.unshift({ id: Date.now(), product, quantity, unit, date, quality, location, notes });
+  localStorage.setItem('harvests', JSON.stringify(harvests));
+  renderHarvests();
+  showToast('Récolte enregistrée ✓');
+  goTo('s-recoltes');
+}
+
+function renderHarvests() {
+  const container = document.getElementById('harvest-user-records');
+  if (!container) return;
+  const harvests = JSON.parse(localStorage.getItem('harvests') || '[]');
+  container.innerHTML = harvests.map(harvest => {
+    const date = new Date(`${harvest.date}T00:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    const details = [date, harvest.location, harvest.notes].filter(Boolean).join(' · ');
+    const badgeClass = harvest.quality === 'À vendre rapidement' ? 'badge-orange' : harvest.quality === 'À sécher' ? 'badge-blue' : 'badge-green';
+    return `<div class="card harvest-user-record"><div class="row"><span class="material-symbols-rounded row-icon">agriculture</span><div class="row-body"><div class="row-title">${escapeHTML(harvest.product)} — ${escapeHTML(String(harvest.quantity))} ${escapeHTML(harvest.unit)}</div><div class="row-sub">${escapeHTML(details)}</div></div><span class="badge ${badgeClass}">${escapeHTML(harvest.quality)}</span></div></div>`;
+  }).join('');
+}
+
+/* ──────────────────────────────────────────
+   11. CALENDRIER — Planifier un événement
 ────────────────────────────────────────── */
 
 function saveCalendarEvent() {
@@ -516,6 +554,7 @@ function animateCards() {
 document.addEventListener('DOMContentLoaded', () => {
   initSaleForm();
   loadSettings();
+  renderHarvests();
   renderCalendarEvents();
 
   // Délégation : cocher les tâches (hors clic sur un lien/bouton)
@@ -606,7 +645,7 @@ window.PNDA = {
   calcLoan,
   askAI, closeAI, formatAIResponse,
   saveApiKey, loadSettings,
-  saveJournalEntry, saveSale, saveCalendarEvent, saveTask,
+  saveJournalEntry, saveSale, saveHarvest, saveCalendarEvent, saveTask,
   showToast, animateCards,
   toggleAlerts, exportData, clearData
 };
@@ -632,6 +671,7 @@ if (typeof window !== 'undefined') {
     loadSettings,
     saveJournalEntry,
     saveSale,
+    saveHarvest,
     saveCalendarEvent,
     showToast,
     animateCards
