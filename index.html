@@ -904,9 +904,9 @@
       </div>
     </div>
     <div class="action-list">
-      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">local_hospital</span>Registre sanitaire complet<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
-      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">restaurant</span>Plan d'alimentation hebdomadaire<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
-      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">bar_chart</span>Courbe de croissance / poids<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-sanitaire')"><span class="material-symbols-rounded action-btn-icon">local_hospital</span>Registre sanitaire complet<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-alimentation')"><span class="material-symbols-rounded action-btn-icon">restaurant</span>Plan d'alimentation hebdomadaire<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-croissance')"><span class="material-symbols-rounded action-btn-icon">bar_chart</span>Courbe de croissance / poids<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
       <button class="action-btn" onclick="askAI('15 bovins: vaccination CBPP dans 2 jours. 5 chèvres dont 3 gestantes (mise bas 20 mai). 40 volailles OK. Quelles sont mes priorités sanitaires et comment organiser la semaine?')">
         <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Plan vétérinaire IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
       </button>
@@ -919,6 +919,95 @@
     <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
     <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
   </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     REGISTRE SANITAIRE
+══════════════════════════════════════ -->
+<section class="screen" id="s-sanitaire">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-elevage')" aria-label="Retour à l'élevage"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Registre sanitaire</div><div class="topbar-sub">Vaccins, soins et alertes</div></div>
+    <button class="topbar-action" onclick="goTo('s-newjournal')" aria-label="Ajouter un soin"><span class="material-symbols-rounded" style="font-size:22px">add</span></button>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid" style="padding-top:14px">
+      <div class="metric-card"><div class="metric-label">Animaux suivis</div><div class="metric-value">60</div><div class="metric-sub">3 espèces</div></div>
+      <div class="metric-card"><div class="metric-label">Alertes actives</div><div class="metric-value" style="color:var(--error)">2</div><div class="metric-sub">Action requise</div></div>
+    </div>
+    <div class="alert-banner danger">
+      <span class="material-symbols-rounded alert-icon filled">vaccines</span>
+      <div><div class="alert-title">Vaccination CBPP dans 2 jours</div><div class="alert-msg">15 bovins concernés · Contacter Dr. Mukeba pour confirmer le passage.</div></div>
+    </div>
+    <div class="section-label">Suivi par espèce</div>
+    <div class="card">
+      <div class="card-head"><span>Bovins · 15 têtes</span><span class="badge badge-red">Urgent</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon filled" style="color:var(--error)">vaccines</span><div class="row-body"><div class="row-title">Vaccin CBPP</div><div class="row-sub">Prochaine dose · 7 mai 2026</div></div><span class="badge badge-red">À faire</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">health_and_safety</span><div class="row-body"><div class="row-title">État général</div><div class="row-sub">Dernier contrôle · 1er mai 2026</div></div><span class="badge badge-green">Normal</span></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span>Chèvres · 5 têtes</span><span class="badge badge-orange">Surveiller</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">pregnant_woman</span><div class="row-body"><div class="row-title">3 gestations suivies</div><div class="row-sub">Mise bas prévue · 20 mai 2026</div></div><span class="badge badge-orange">Suivi</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">event</span><div class="row-body"><div class="row-title">Déparasitage</div><div class="row-sub">Prochaine intervention · 12 mai</div></div><span class="badge badge-blue">Planifié</span></div>
+    </div>
+    <div class="card">
+      <div class="card-head">Volailles · 40 têtes</div>
+      <div class="row"><span class="material-symbols-rounded row-icon">egg</span><div class="row-body"><div class="row-title">État du poulailler</div><div class="row-sub">Aucun symptôme signalé</div></div><span class="badge badge-green">Normal</span></div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn" onclick="goTo('s-newjournal')"><span class="material-symbols-rounded action-btn-icon">add_circle</span>Enregistrer un soin ou vaccin<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="askAI('Registre sanitaire: 15 bovins à vacciner contre CBPP dans 2 jours, 3 chèvres gestantes, 40 volailles sans symptôme. Organise un plan sanitaire priorisé.')"><span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Plan sanitaire IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+    </div>
+  </div>
+  <nav class="bottom-nav"><button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button><button class="nav-btn active" onclick="goTo('s-elevage')"><span class="material-symbols-rounded nav-icon">pets</span><span class="nav-label">Élevage</span></button><button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button><button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button><button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button></nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     PLAN D'ALIMENTATION
+══════════════════════════════════════ -->
+<section class="screen" id="s-alimentation">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-elevage')" aria-label="Retour à l'élevage"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Plan d'alimentation</div><div class="topbar-sub">Semaine du 5 au 11 mai 2026</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid" style="padding-top:14px"><div class="metric-card"><div class="metric-label">Fourrage prévu</div><div class="metric-value">420 kg</div><div class="metric-sub">Bovins et chèvres</div></div><div class="metric-card"><div class="metric-label">Budget semaine</div><div class="metric-value">28 500 FC</div><div class="metric-sub">Stock disponible</div></div></div>
+    <div class="alert-banner info"><span class="material-symbols-rounded alert-icon filled">restaurant</span><div><div class="alert-title">Ration adaptée à la saison sèche</div><div class="alert-msg">Maintenir l'eau à volonté et compléter le fourrage avec 8 kg de concentré par jour.</div></div></div>
+    <div class="section-label">Planning de la semaine</div>
+    <div class="card">
+      <div class="row"><span class="material-symbols-rounded row-icon">today</span><div class="row-body"><div class="row-title">Aujourd'hui · Mardi 5 mai</div><div class="row-sub">Fourrage 60 kg · Concentré 8 kg · Eau 180 L</div></div><span class="badge badge-green">Planifié</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">event</span><div class="row-body"><div class="row-title">Mercredi 6 mai</div><div class="row-sub">Fourrage 60 kg · Complément minéral 1,5 kg</div></div><span class="badge badge-blue">À venir</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">event</span><div class="row-body"><div class="row-title">Jeudi 7 mai</div><div class="row-sub">Fourrage 60 kg · Contrôle poids des bovins</div></div><span class="badge badge-blue">À venir</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">event</span><div class="row-body"><div class="row-title">Vendredi 8 mai</div><div class="row-sub">Fourrage 60 kg · Aliment ponte 12 kg</div></div><span class="badge badge-blue">À venir</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">event</span><div class="row-body"><div class="row-title">Samedi 9 mai</div><div class="row-sub">Fourrage 60 kg · Eau 180 L</div></div><span class="badge badge-blue">À venir</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">event</span><div class="row-body"><div class="row-title">Dimanche 10 mai</div><div class="row-sub">Fourrage 60 kg · Complément chèvres 3 kg</div></div><span class="badge badge-blue">À venir</span></div>
+      <div class="row"><span class="material-symbols-rounded row-icon">event</span><div class="row-body"><div class="row-title">Lundi 11 mai</div><div class="row-sub">Fourrage 60 kg · Inventaire du stock</div></div><span class="badge badge-blue">À venir</span></div>
+    </div>
+    <div class="action-list"><button class="action-btn" onclick="goTo('s-stocks')"><span class="material-symbols-rounded action-btn-icon">inventory_2</span>Vérifier les stocks d'aliments<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button><button class="action-btn" onclick="askAI('Crée un plan alimentaire hebdomadaire pour 15 bovins, 5 chèvres dont 3 gestantes et 40 volailles, avec fourrage, concentré, eau et budget limité.')"><span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Optimiser le plan avec l'IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button></div>
+  </div>
+  <nav class="bottom-nav"><button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button><button class="nav-btn active" onclick="goTo('s-elevage')"><span class="material-symbols-rounded nav-icon">pets</span><span class="nav-label">Élevage</span></button><button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button><button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button><button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button></nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     COURBE DE CROISSANCE
+══════════════════════════════════════ -->
+<section class="screen" id="s-croissance">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-elevage')" aria-label="Retour à l'élevage"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Croissance et poids</div><div class="topbar-sub">Suivi du troupeau bovin</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid" style="padding-top:14px"><div class="metric-card"><div class="metric-label">Poids moyen</div><div class="metric-value">285 kg</div><div class="metric-sub">+12 kg depuis mars</div></div><div class="metric-card"><div class="metric-label">Objectif moyen</div><div class="metric-value">320 kg</div><div class="metric-sub">Progression 89%</div></div></div>
+    <div class="card"><div class="card-head"><span>Poids moyen des bovins</span><span class="badge badge-green">+4,4%</span></div><div class="chart-wrap"><div class="chart-bars"><div class="chart-bar" style="height:58%"></div><div class="chart-bar" style="height:64%"></div><div class="chart-bar" style="height:70%"></div><div class="chart-bar" style="height:76%"></div><div class="chart-bar" style="height:82%"></div><div class="chart-bar highlight" style="height:89%"></div></div><div class="chart-labels"><div class="chart-label">Déc</div><div class="chart-label">Jan</div><div class="chart-label">Fév</div><div class="chart-label">Mar</div><div class="chart-label">Avr</div><div class="chart-label">Mai</div></div></div></div>
+    <div class="section-label">Dernières pesées</div>
+    <div class="card"><div class="row"><span class="material-symbols-rounded row-icon">scale</span><div class="row-body"><div class="row-title">BOV-001 · Mâle adulte</div><div class="row-sub">1er mai 2026 · +15 kg depuis mars</div></div><div class="row-value text-green">310 kg</div></div><div class="row"><span class="material-symbols-rounded row-icon">scale</span><div class="row-body"><div class="row-title">BOV-007 · Femelle adulte</div><div class="row-sub">1er mai 2026 · +9 kg depuis mars</div></div><div class="row-value text-green">285 kg</div></div><div class="row"><span class="material-symbols-rounded row-icon">scale</span><div class="row-body"><div class="row-title">BOV-012 · Jeune bovin</div><div class="row-sub">1er mai 2026 · Croissance normale</div></div><div class="row-value text-green">240 kg</div></div></div>
+    <div class="alert-banner info"><span class="material-symbols-rounded alert-icon filled">trending_up</span><div><div class="alert-title">Croissance régulière</div><div class="alert-msg">La ration actuelle permet un gain moyen de 0,6 kg par jour.</div></div></div>
+    <div class="action-list"><button class="action-btn" onclick="goTo('s-newjournal')"><span class="material-symbols-rounded action-btn-icon">add_circle</span>Enregistrer une pesée<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button><button class="action-btn" onclick="askAI('Mes bovins pèsent en moyenne 285 kg, avec un gain de 12 kg depuis mars et un objectif de 320 kg. Comment optimiser la croissance sans dépasser mon budget alimentaire?')"><span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Analyser la croissance avec l'IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button></div>
+  </div>
+  <nav class="bottom-nav"><button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button><button class="nav-btn active" onclick="goTo('s-elevage')"><span class="material-symbols-rounded nav-icon">pets</span><span class="nav-label">Élevage</span></button><button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button><button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button><button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button></nav>
 </section>
 
 
