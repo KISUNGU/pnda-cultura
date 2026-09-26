@@ -125,37 +125,85 @@
      ACCUEIL — Tableau de bord
 ══════════════════════════════════════ -->
 <section class="screen active" id="s-home">
-  <div class="dash-header" style="position:relative;overflow:hidden;padding-bottom:0">
-    <!-- Image illustrative — paysan africain aux champs -->
-    <img src="https://images.unsplash.com/photo-1589923158776-cb4485d99fd6?w=460&h=180&fit=crop&crop=center&auto=format&q=70"
-         alt="Fermier aux champs" aria-hidden="true"
-         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;opacity:0.22;pointer-events:none;z-index:0">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
-      <div>
-        <div class="dash-greeting">
-          <span class="material-symbols-rounded" style="font-size:24px">eco</span>
-          Bonjour, Jean-Pierre
-        </div>
-        <div class="dash-date">Mardi 5 mai 2026 · Ferme Kalonji — Kasaï</div>
+  <div class="dash-header" style="position:relative;overflow:visible;padding-bottom:0">
+  <!-- Image illustrative — paysan africain aux champs -->
+  <img src="https://images.unsplash.com/photo-1589923158776-cb4485d99fd6?w=460&h=180&fit=crop&crop=center&auto=format&q=70"
+       alt="Fermier aux champs" aria-hidden="true"
+       style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;opacity:0.22;pointer-events:none;z-index:0;border-radius:0 0 14px 14px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
+    <div>
+      <div class="dash-greeting">
+        <span class="material-symbols-rounded" style="font-size:24px">eco</span>
+        Bonjour, Jean-Pierre
       </div>
+      <div class="dash-date">Mardi 5 mai 2026 · Ferme Kalonji — Kasaï</div>
+    </div>
+    <div class="header-actions">
+      <!-- Alerte vaccin (rouge) -->
+      <button class="alert-btn danger" onclick="toggleAlerts()" aria-label="Alertes urgentes">
+        <span class="material-symbols-rounded filled">vaccines</span>
+        <span class="alert-badge red">1</span>
+      </button>
+      <!-- Alerte météo (orange) -->
+      <button class="alert-btn warn" onclick="toggleAlerts()" aria-label="Alertes météo">
+        <span class="material-symbols-rounded filled">rainy</span>
+        <span class="alert-badge orange">1</span>
+      </button>
+      <!-- Notifications générales (cloche) -->
       <button class="notif-btn" onclick="goTo('s-notif')" aria-label="Notifications">
         <span class="material-symbols-rounded" style="font-size:22px;color:white">notifications</span>
         <span class="notif-badge">5</span>
       </button>
     </div>
-    <div class="stat-row" style="position:relative;z-index:1;padding-bottom:18px">
-      <div class="stat-pill"><div class="stat-val">4,8 ha</div><div class="stat-lbl">Terres cultivées</div></div>
-      <div class="stat-pill"><div class="stat-val">142k FC</div><div class="stat-lbl">Bénéfice net/mois</div></div>
-      <div class="stat-pill"><div class="stat-val">5 alertes</div><div class="stat-lbl">En attente</div></div>
-    </div>
+  </div>
+  <div class="stat-row" style="position:relative;z-index:1;padding-bottom:18px">
+    <div class="stat-pill"><div class="stat-val">4,8 ha</div><div class="stat-lbl">Terres cultivées</div></div>
+    <div class="stat-pill"><div class="stat-val">142k FC</div><div class="stat-lbl">Bénéfice net/mois</div></div>
+    <div class="stat-pill"><div class="stat-val">5 alertes</div><div class="stat-lbl">En attente</div></div>
   </div>
 
-  <div class="scroll-area">
-    <div class="alert-banner danger">
-      <span class="material-symbols-rounded alert-icon filled">vaccines</span>
-      <div><div class="alert-title">Vaccination bovins CBPP due dans 2 jours</div>
-      <div class="alert-msg">15 bovins · Contacter Dr. Mukeba aujourd'hui</div></div>
+  <!-- Popover alertes (caché par défaut) -->
+  <div class="alerts-popover" id="alerts-popover">
+    <div class="alerts-popover-head">
+      <span>⚠️ Alertes actives</span>
+      <span style="font-size:11px;color:var(--on-surface-var);cursor:pointer" onclick="toggleAlerts()">Fermer</span>
     </div>
+    <div class="alerts-popover-body">
+      <div class="alert-row" onclick="goTo('s-elevage');toggleAlerts()">
+        <div class="alert-row-icon danger">
+          <span class="material-symbols-rounded filled">vaccines</span>
+        </div>
+        <div class="alert-row-body">
+          <div class="alert-row-title">Vaccination bovins CBPP</div>
+          <div class="alert-row-sub">Due dans 2 jours · 15 animaux</div>
+        </div>
+        <span class="badge badge-red">Urgent</span>
+      </div>
+      <div class="alert-row" onclick="goTo('s-meteo');toggleAlerts()">
+        <div class="alert-row-icon warn">
+          <span class="material-symbols-rounded filled">rainy</span>
+        </div>
+        <div class="alert-row-body">
+          <div class="alert-row-title">Pluie forte demain (45 mm)</div>
+          <div class="alert-row-sub">Risque érosion parcelle A2</div>
+        </div>
+        <span class="badge badge-orange">Météo</span>
+      </div>
+      <div class="alert-row" onclick="goTo('s-stocks');toggleAlerts()">
+        <div class="alert-row-icon warn">
+          <span class="material-symbols-rounded">inventory_2</span>
+        </div>
+        <div class="alert-row-body">
+          <div class="alert-row-title">Stock NPK critique (27%)</div>
+          <div class="alert-row-sub">Commander sous 5 jours</div>
+        </div>
+        <span class="badge badge-orange">Stock</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="scroll-area">
     <div class="alert-banner warn">
       <span class="material-symbols-rounded alert-icon filled">rainy</span>
       <div><div class="alert-title">Pluie forte prévue demain (45 mm)</div>
@@ -164,67 +212,72 @@
 
     <div class="section-label">Modules</div>
     <div class="module-grid">
-      <div class="module-card" onclick="goTo('s-parcelles')">
-        <span class="material-symbols-rounded module-card-icon">grass</span>
-        <div class="module-card-name">Mes Parcelles</div>
-        <span class="badge badge-green">4 cultures</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-elevage')">
-        <span class="material-symbols-rounded module-card-icon">pets</span>
-        <div class="module-card-name">Élevage</div>
-        <span class="badge badge-red">2 urgences</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-meteo')">
-        <span class="material-symbols-rounded module-card-icon">partly_cloudy_day</span>
-        <div class="module-card-name">Météo</div>
-        <span class="badge badge-orange">Pluie demain</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-stocks')">
-        <span class="material-symbols-rounded module-card-icon">inventory_2</span>
-        <div class="module-card-name">Stocks &amp; Intrants</div>
-        <span class="badge badge-orange">2 faibles</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-finances')">
-        <span class="material-symbols-rounded module-card-icon">savings</span>
-        <div class="module-card-name">Finances</div>
-        <span class="badge badge-green">+142k FC</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-marche')">
-        <span class="material-symbols-rounded module-card-icon">trending_up</span>
-        <div class="module-card-name">Marché</div>
-        <span class="badge badge-green">Prix live</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-pisciculture')">
-        <span class="material-symbols-rounded module-card-icon">set_meal</span>
-        <div class="module-card-name">Pisciculture</div>
-        <span class="badge badge-teal">2 bassins</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-journal')">
-        <span class="material-symbols-rounded module-card-icon">menu_book</span>
-        <div class="module-card-name">Journal terrain</div>
-        <span class="badge badge-blue">12 entrées</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-taches')">
-        <span class="material-symbols-rounded module-card-icon">task_alt</span>
-        <div class="module-card-name">Tâches</div>
-        <span class="badge badge-orange">5 à faire</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-sol')">
-        <span class="material-symbols-rounded module-card-icon">science</span>
-        <div class="module-card-name">Analyse Sol</div>
-        <span class="badge badge-green">Avril 2026</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-credit')">
-        <span class="material-symbols-rounded module-card-icon">account_balance</span>
-        <div class="module-card-name">Crédit &amp; Calc.</div>
-        <span class="badge badge-purple">Simuler</span>
-      </div>
-      <div class="module-card" onclick="goTo('s-comm')">
-        <span class="material-symbols-rounded module-card-icon">groups</span>
-        <div class="module-card-name">Communauté</div>
-        <span class="badge badge-blue">12 nouveaux</span>
-      </div>
-    </div>
+  <div class="module-card color-green" onclick="goTo('s-parcelles')">
+    <span class="material-symbols-rounded module-card-icon">grass</span>
+    <div class="module-card-name">Mes Parcelles</div>
+    <span class="badge badge-green">4 cultures</span>
+  </div>
+  <div class="module-card color-gold" onclick="goTo('s-recoltes')">
+    <span class="material-symbols-rounded module-card-icon">agriculture</span>
+    <div class="module-card-name">Récoltes</div>
+    <span class="badge badge-orange">2 à venir</span>
+  </div>
+  <div class="module-card color-amber" onclick="goTo('s-elevage')">
+    <span class="material-symbols-rounded module-card-icon">pets</span>
+    <div class="module-card-name">Élevage</div>
+    <span class="badge badge-red">2 urgences</span>
+  </div>
+  <div class="module-card color-sky" onclick="goTo('s-meteo')">
+    <span class="material-symbols-rounded module-card-icon">partly_cloudy_day</span>
+    <div class="module-card-name">Météo</div>
+    <span class="badge badge-orange">Pluie demain</span>
+  </div>
+  <div class="module-card color-clay" onclick="goTo('s-stocks')">
+    <span class="material-symbols-rounded module-card-icon">inventory_2</span>
+    <div class="module-card-name">Stocks &amp; Intrants</div>
+    <span class="badge badge-orange">2 faibles</span>
+  </div>
+  <div class="module-card color-mint" onclick="goTo('s-finances')">
+    <span class="material-symbols-rounded module-card-icon">savings</span>
+    <div class="module-card-name">Finances</div>
+    <span class="badge badge-green">+142k FC</span>
+  </div>
+  <div class="module-card color-gold" onclick="goTo('s-marche')">
+    <span class="material-symbols-rounded module-card-icon">trending_up</span>
+    <div class="module-card-name">Marché</div>
+    <span class="badge badge-green">Prix live</span>
+  </div>
+  <div class="module-card color-aqua" onclick="goTo('s-pisciculture')">
+    <span class="material-symbols-rounded module-card-icon">set_meal</span>
+    <div class="module-card-name">Pisciculture</div>
+    <span class="badge badge-teal">2 bassins</span>
+  </div>
+  <div class="module-card color-lilac" onclick="goTo('s-journal')">
+    <span class="material-symbols-rounded module-card-icon">menu_book</span>
+    <div class="module-card-name">Journal terrain</div>
+    <span class="badge badge-blue">12 entrées</span>
+  </div>
+  <div class="module-card color-rose" onclick="goTo('s-taches')">
+    <span class="material-symbols-rounded module-card-icon">task_alt</span>
+    <div class="module-card-name">Tâches</div>
+    <span class="badge badge-orange">5 à faire</span>
+  </div>
+  <div class="module-card color-soil" onclick="goTo('s-sol')">
+    <span class="material-symbols-rounded module-card-icon">science</span>
+    <div class="module-card-name">Analyse Sol</div>
+    <span class="badge badge-green">Avril 2026</span>
+  </div>
+  <div class="module-card color-indigo" onclick="goTo('s-credit')">
+    <span class="material-symbols-rounded module-card-icon">account_balance</span>
+    <div class="module-card-name">Crédit &amp; Calc.</div>
+    <span class="badge badge-purple">Simuler</span>
+  </div>
+  <div class="module-card color-teal" onclick="goTo('s-comm')">
+    <span class="material-symbols-rounded module-card-icon">groups</span>
+    <div class="module-card-name">Communauté</div>
+    <span class="badge badge-blue">12 nouveaux</span>
+  </div>
+</div>
 
     <!-- Bannière illustrative paysage agricole -->
     <div style="margin:4px 14px 12px;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.10);position:relative;height:110px">
@@ -372,7 +425,8 @@
     </div>
 
     <div class="action-list">
-      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">calendar_month</span>Calendrier des semis &amp; récoltes<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-recoltes')"><span class="material-symbols-rounded action-btn-icon">agriculture</span>Suivi des récoltes<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-calendrier')"><span class="material-symbols-rounded action-btn-icon">calendar_month</span>Calendrier des semis &amp; récoltes<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
       <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">biotech</span>Historique des traitements<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
       <button class="action-btn" onclick="askAI('Maïs A1 en floraison 2ha pH6.2, riz A2 à 35% 1.8ha risque érosion, manioc B1 prêt à récolter 0.5ha. Quelles sont mes 3 priorités cette semaine?')">
         <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Analyse IA de mes parcelles<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
@@ -382,6 +436,169 @@
   <nav class="bottom-nav">
     <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
     <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     RÉCOLTES
+══════════════════════════════════════ -->
+<section class="screen" id="s-recoltes">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-parcelles')" aria-label="Retour aux parcelles"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Suivi des récoltes</div><div class="topbar-sub">Prévisions, lots et stockage</div></div>
+    <button class="topbar-action" onclick="showToast('Formulaire de récolte bientôt disponible')" aria-label="Ajouter une récolte"><span class="material-symbols-rounded" style="font-size:22px">add</span></button>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid" style="padding-top:14px">
+      <div class="metric-card"><div class="metric-label">À récolter</div><div class="metric-value">2,4 T</div><div class="metric-sub">Prévu ce cycle</div></div>
+      <div class="metric-card"><div class="metric-label">Stock actuel</div><div class="metric-value">680 kg</div><div class="metric-sub">3 lots enregistrés</div></div>
+    </div>
+
+    <div class="section-label">Prochaines récoltes</div>
+    <div class="card">
+      <div class="card-head">
+        <span>Récoltes planifiées</span>
+        <span class="badge badge-orange">2 prévues</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--tertiary)">agriculture</span>
+        <div class="row-body"><div class="row-title">Manioc — Parcelle B1</div><div class="row-sub">0,5 ha · Prévue dans 18 jours</div></div>
+        <div class="row-value">1,6 T</div>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--primary)">grass</span>
+        <div class="row-body"><div class="row-title">Maïs — Parcelle A1</div><div class="row-sub">2,0 ha · Prévue fin juin 2026</div></div>
+        <div class="row-value">0,8 T</div>
+      </div>
+    </div>
+
+    <div class="section-label">Récoltes stockées</div>
+    <div class="card">
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">warehouse</span>
+        <div class="row-body"><div class="row-title">Maïs sec</div><div class="row-sub">Lot MA-2604 · Magasin principal</div></div>
+        <div><div class="row-value">420 kg</div><span class="badge badge-green" style="display:block;margin-top:4px">Bon état</span></div>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">inventory_2</span>
+        <div class="row-body"><div class="row-title">Riz paddy</div><div class="row-sub">Lot RZ-2604 · Séchage terminé</div></div>
+        <div><div class="row-value">260 kg</div><span class="badge badge-orange" style="display:block;margin-top:4px">À vendre</span></div>
+      </div>
+    </div>
+
+    <div class="alert-banner warn">
+      <span class="material-symbols-rounded alert-icon filled">schedule</span>
+      <div><div class="alert-title">Préparer la récolte du manioc</div><div class="alert-msg">Vérifier les sacs et réserver le transport avant le 23 mai.</div></div>
+    </div>
+
+    <div class="action-list">
+      <button class="action-btn" onclick="showToast('Formulaire de récolte bientôt disponible')"><span class="material-symbols-rounded action-btn-icon">add_circle</span>Enregistrer une récolte<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded action-btn-icon">sell</span>Consulter les prix du marché<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     CALENDRIER DES SEMIS & RÉCOLTES
+══════════════════════════════════════ -->
+<section class="screen" id="s-calendrier">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-parcelles')" aria-label="Retour aux parcelles"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Calendrier agricole</div><div class="topbar-sub">Semis, interventions et récoltes</div></div>
+    <button class="topbar-action" onclick="showToast('Nouvel événement bientôt disponible')" aria-label="Ajouter un événement"><span class="material-symbols-rounded" style="font-size:22px">add</span></button>
+  </div>
+  <div class="scroll-area">
+    <div class="calendar-toolbar">
+      <button class="calendar-month-btn" aria-label="Mois précédent"><span class="material-symbols-rounded">chevron_left</span></button>
+      <div class="calendar-month">Mai 2026</div>
+      <button class="calendar-month-btn" aria-label="Mois suivant"><span class="material-symbols-rounded">chevron_right</span></button>
+    </div>
+
+    <div class="calendar-card" aria-label="Calendrier de mai 2026">
+      <div class="calendar-weekdays" aria-hidden="true">
+        <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>
+      </div>
+      <div class="calendar-grid">
+        <span class="calendar-day muted">27</span><span class="calendar-day muted">28</span><span class="calendar-day muted">29</span><span class="calendar-day muted">30</span>
+        <button class="calendar-day" aria-label="Vendredi 1 mai">1</button>
+        <button class="calendar-day" aria-label="Samedi 2 mai">2</button>
+        <button class="calendar-day" aria-label="Dimanche 3 mai">3</button>
+        <button class="calendar-day" aria-label="Lundi 4 mai">4</button>
+        <button class="calendar-day today" aria-label="Mardi 5 mai, aujourd'hui">5<span class="calendar-dot dot-blue"></span></button>
+        <button class="calendar-day" aria-label="Mercredi 6 mai">6</button>
+        <button class="calendar-day" aria-label="Jeudi 7 mai">7</button>
+        <button class="calendar-day" aria-label="Vendredi 8 mai">8</button>
+        <button class="calendar-day" aria-label="Samedi 9 mai">9</button>
+        <button class="calendar-day" aria-label="Dimanche 10 mai">10</button>
+        <button class="calendar-day" aria-label="Lundi 11 mai">11</button>
+        <button class="calendar-day" aria-label="Mardi 12 mai">12<span class="calendar-dot dot-green"></span></button>
+        <button class="calendar-day" aria-label="Mercredi 13 mai">13</button>
+        <button class="calendar-day" aria-label="Jeudi 14 mai">14</button>
+        <button class="calendar-day" aria-label="Vendredi 15 mai">15</button>
+        <button class="calendar-day" aria-label="Samedi 16 mai">16</button>
+        <button class="calendar-day" aria-label="Dimanche 17 mai">17</button>
+        <button class="calendar-day" aria-label="Lundi 18 mai">18</button>
+        <button class="calendar-day" aria-label="Mardi 19 mai">19</button>
+        <button class="calendar-day" aria-label="Mercredi 20 mai">20<span class="calendar-dot dot-orange"></span></button>
+        <button class="calendar-day" aria-label="Jeudi 21 mai">21</button>
+        <button class="calendar-day" aria-label="Vendredi 22 mai">22</button>
+        <button class="calendar-day" aria-label="Samedi 23 mai">23<span class="calendar-dot dot-teal"></span></button>
+        <button class="calendar-day" aria-label="Dimanche 24 mai">24</button>
+        <button class="calendar-day" aria-label="Lundi 25 mai">25</button>
+        <button class="calendar-day" aria-label="Mardi 26 mai">26</button>
+        <button class="calendar-day" aria-label="Mercredi 27 mai">27</button>
+        <button class="calendar-day" aria-label="Jeudi 28 mai">28</button>
+        <button class="calendar-day" aria-label="Vendredi 29 mai">29</button>
+        <button class="calendar-day" aria-label="Samedi 30 mai">30</button>
+        <button class="calendar-day" aria-label="Dimanche 31 mai">31</button>
+      </div>
+      <div class="calendar-legend" aria-label="Légende">
+        <span><i class="calendar-dot dot-blue"></i>Intervention</span>
+        <span><i class="calendar-dot dot-green"></i>Semis</span>
+        <span><i class="calendar-dot dot-orange"></i>Récolte</span>
+        <span><i class="calendar-dot dot-teal"></i>Préparation</span>
+      </div>
+    </div>
+
+    <div class="section-label">À venir</div>
+    <div class="card">
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--primary)">grass</span>
+        <div class="row-body"><div class="row-title">Semis de haricots — Parcelle C1</div><div class="row-sub">12 mai · Sol humide attendu après les pluies</div></div>
+        <span class="badge badge-green">Semis</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--tertiary)">agriculture</span>
+        <div class="row-body"><div class="row-title">Récolte manioc — Parcelle B1</div><div class="row-sub">20 mai · Préparer sacs et transport</div></div>
+        <span class="badge badge-orange">Récolte</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--teal)">inventory_2</span>
+        <div class="row-body"><div class="row-title">Contrôle du stockage</div><div class="row-sub">23 mai · Vérifier humidité des lots</div></div>
+        <span class="badge badge-teal">Préparer</span>
+      </div>
+    </div>
+
+    <div class="action-list">
+      <button class="action-btn" onclick="showToast('Nouvel événement bientôt disponible')"><span class="material-symbols-rounded action-btn-icon">add_circle</span>Planifier un événement<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-recoltes')"><span class="material-symbols-rounded action-btn-icon">agriculture</span>Ouvrir le suivi des récoltes<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
     <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
     <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
     <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
@@ -791,10 +1008,6 @@
       <div class="weather-day"><div class="weather-day-name">Sam</div><div class="weather-day-icon"><span class="material-symbols-rounded" style="font-size:24px;color:var(--info)">partly_cloudy_day</span></div><div class="weather-day-temp">27°</div><div class="weather-day-rain">5mm</div></div>
     </div>
     <div class="section-label">Impact sur mes cultures</div>
-    <div class="alert-banner danger">
-      <span class="material-symbols-rounded alert-icon filled">warning</span>
-      <div><div class="alert-title">Risque érosion parcelle A2 (riz)</div><div class="alert-msg">45mm peuvent éroder les talus. Vérifier les canaux de drainage aujourd'hui avant la nuit.</div></div>
-    </div>
     <div class="alert-banner warn">
       <span class="material-symbols-rounded alert-icon filled">water_drop</span>
       <div><div class="alert-title">Ne pas arroser les 3 prochains jours</div><div class="alert-msg">Pluies suffisantes. Économisez le carburant de la pompe à eau.</div></div>
@@ -1496,6 +1709,326 @@
     <div class="ai-output" id="ai-output"></div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════
+     PARAMÈTRES
+══════════════════════════════════════ -->
+<section class="screen" id="s-settings">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Paramètres</div><div class="topbar-sub">Configuration de l'application</div></div>
+  </div>
+  <div class="scroll-area">
+
+    <!-- Profil -->
+    <div class="settings-section">
+      <div class="settings-item" onclick="goTo('s-profil')">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">person</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Mon profil</div>
+          <div class="settings-item-sub">Jean-Pierre Kalonji · Ferme Kalonji</div>
+        </div>
+        <span class="material-symbols-rounded" style="color:var(--on-surface-var)">chevron_right</span>
+      </div>
+    </div>
+
+    <!-- Clé API IA -->
+    <div class="section-label">Intelligence Artificielle</div>
+    <div class="settings-section">
+      <div class="settings-item" style="flex-direction:column;align-items:stretch;cursor:default">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div class="settings-item-icon"><span class="material-symbols-rounded">key</span></div>
+          <div class="settings-item-body">
+            <div class="settings-item-title">Clé API Anthropic</div>
+            <div class="settings-item-sub">Pour activer les conseils IA</div>
+          </div>
+        </div>
+        <input class="form-input" id="api-key-input" type="password" placeholder="sk-ant-...">
+        <button class="form-btn" style="margin-top:10px" onclick="saveApiKey()">
+          <span class="material-symbols-rounded" style="font-size:20px">save</span>
+          Enregistrer la clé
+        </button>
+      </div>
+    </div>
+
+    <!-- Préférences -->
+    <div class="section-label">Préférences</div>
+    <div class="settings-section">
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">notifications</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Notifications push</div>
+          <div class="settings-item-sub">Alertes vaccination, météo, stock</div>
+        </div>
+        <div class="switch on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">language</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Langue</div>
+          <div class="settings-item-sub">Français</div>
+        </div>
+        <span class="material-symbols-rounded" style="color:var(--on-surface-var)">chevron_right</span>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">payments</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Devise</div>
+          <div class="settings-item-sub">Franc Congolais (FC)</div>
+        </div>
+        <span class="material-symbols-rounded" style="color:var(--on-surface-var)">chevron_right</span>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">dark_mode</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Mode sombre</div>
+          <div class="settings-item-sub">Économise la batterie</div>
+        </div>
+        <div class="switch" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <!-- Données -->
+    <div class="section-label">Données</div>
+    <div class="settings-section">
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">cloud_sync</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Synchronisation</div>
+          <div class="settings-item-sub">Dernière sync: il y a 2h</div>
+        </div>
+        <span class="badge badge-green">OK</span>
+      </div>
+      <div class="settings-item" onclick="exportData()">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">download</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Exporter mes données</div>
+          <div class="settings-item-sub">JSON · Toutes les entrées</div>
+        </div>
+        <span class="material-symbols-rounded" style="color:var(--on-surface-var)">chevron_right</span>
+      </div>
+      <div class="settings-item" onclick="clearData()">
+        <div class="settings-item-icon" style="background:var(--error-50);color:var(--error)"><span class="material-symbols-rounded">delete</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title" style="color:var(--error)">Effacer les données locales</div>
+          <div class="settings-item-sub">Action irréversible</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- À propos -->
+    <div class="section-label">À propos</div>
+    <div class="settings-section">
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">info</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Version</div>
+          <div class="settings-item-sub">PNDA-Cultura v1.0.0</div>
+        </div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">help</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Aide &amp; support</div>
+          <div class="settings-item-sub">FAQ, contact</div>
+        </div>
+        <span class="material-symbols-rounded" style="color:var(--on-surface-var)">chevron_right</span>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     PROFIL
+══════════════════════════════════════ -->
+<section class="screen" id="s-profil">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-settings')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Mon Profil</div></div>
+    <button class="topbar-action" onclick="showToast('Profil enregistré ✓')"><span class="material-symbols-rounded" style="font-size:22px">save</span></button>
+  </div>
+  <div class="scroll-area" style="padding-top:0">
+    <div class="profile-header">
+      <div class="profile-avatar">JP</div>
+      <div class="profile-name">Jean-Pierre Kalonji</div>
+      <div class="profile-role">Agriculteur · Ferme Kalonji — Kasaï</div>
+      <div class="profile-stats">
+        <div><div class="profile-stat-val">4,8</div><div class="profile-stat-lbl">hectares</div></div>
+        <div><div class="profile-stat-val">60</div><div class="profile-stat-lbl">animaux</div></div>
+        <div><div class="profile-stat-val">142k</div><div class="profile-stat-lbl">FC/mois</div></div>
+      </div>
+    </div>
+
+    <div class="section-label">Informations personnelles</div>
+    <div class="form-area">
+      <div class="form-row">
+        <label class="form-label">Nom complet</label>
+        <input class="form-input" type="text" value="Jean-Pierre Kalonji">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Nom de la ferme</label>
+        <input class="form-input" type="text" value="Ferme Kalonji">
+      </div>
+      <div class="form-row-2">
+        <div>
+          <label class="form-label">Région</label>
+          <select class="form-select"><option>Kasaï</option><option>Lomami</option><option>Kananga</option></select>
+        </div>
+        <div>
+          <label class="form-label">Téléphone</label>
+          <input class="form-input" type="tel" value="+243 81 234 5678">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" value="jp.kalonji@example.cd">
+      </div>
+    </div>
+
+    <div class="section-label">Activités déclarées</div>
+    <div class="settings-section">
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">grass</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Cultures</div>
+          <div class="settings-item-sub">Maïs, riz, manioc, haricots</div>
+        </div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">pets</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Élevage</div>
+          <div class="settings-item-sub">Bovins, chèvres, volailles</div>
+        </div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><span class="material-symbols-rounded">set_meal</span></div>
+        <div class="settings-item-body">
+          <div class="settings-item-title">Pisciculture</div>
+          <div class="settings-item-sub">Tilapia, poisson-chat</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     STOCK DÉTAIL (exemple)
+══════════════════════════════════════ -->
+<section class="screen" id="s-stock-detail">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-stocks')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">NPK 20-10-10</div><div class="topbar-sub">Engrais composé</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label">Stock actuel</div>
+        <div class="metric-value" style="color:var(--tertiary)">80 kg</div>
+        <div class="metric-sub">27% restant</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Consommation</div>
+        <div class="metric-value">50 kg</div>
+        <div class="metric-sub">Cette semaine</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Historique d'utilisation</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">event</span>
+        <div class="row-body"><div class="row-title">Parcelle A1 — Maïs</div><div class="row-sub">3 mai 2026</div></div>
+        <div class="row-value">-50 kg</div>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">event</span>
+        <div class="row-body"><div class="row-title">Parcelle B1 — Manioc</div><div class="row-sub">20 avr. 2026</div></div>
+        <div class="row-value">-30 kg</div>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--primary)">add_circle</span>
+        <div class="row-body"><div class="row-title">Réapprovisionnement</div><div class="row-sub">10 avr. 2026 · Agro-Kasaï</div></div>
+        <div class="row-value text-green">+200 kg</div>
+      </div>
+    </div>
+    <div class="alert-banner warn">
+      <span class="material-symbols-rounded alert-icon filled">warning</span>
+      <div><div class="alert-title">Commande recommandée</div><div class="alert-msg">Sur la base de votre consommation (~50 kg/sem), prévoir 150 kg pour couvrir 3 semaines.</div></div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn" onclick="showToast('Commande envoyée à Agro-Kasaï ✓')">
+        <span class="material-symbols-rounded action-btn-icon">shopping_cart</span>
+        Commander 150 kg
+        <span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+      <button class="action-btn" onclick="askAI('Mon stock NPK est à 80kg (27%), consommation 50kg/semaine, 3 parcelles actives. Combien dois-je commander et quand, pour éviter toute rupture pendant le cycle de floraison du maïs?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>
+        Demander conseil IA
+        <span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     NOUVELLE TÂCHE
+══════════════════════════════════════ -->
+<section class="screen" id="s-taches-new">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-taches')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Nouvelle tâche</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="form-area">
+      <div class="form-row">
+        <label class="form-label">Intitulé de la tâche</label>
+        <input class="form-input" type="text" id="task-title" placeholder="ex: Arroser parcelle A1">
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Date</label><input class="form-input" type="date" value="2026-05-05"></div>
+        <div><label class="form-label">Heure</label><input class="form-input" type="time" value="08:00"></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Priorité</label>
+        <select class="form-select">
+          <option>Normale</option>
+          <option>Important</option>
+          <option>Urgent</option>
+          <option>Critique</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Catégorie</label>
+        <select class="form-select">
+          <option>Culture</option>
+          <option>Élevage</option>
+          <option>Pisciculture</option>
+          <option>Matériel</option>
+          <option>Administratif</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" placeholder="Détails complémentaires..."></textarea>
+      </div>
+      <button class="form-btn" onclick="saveTask()">
+        <span class="material-symbols-rounded" style="font-size:20px">save</span>
+        Créer la tâche
+      </button>
+      <button class="form-btn secondary" onclick="goTo('s-taches')">Annuler</button>
+    </div>
+  </div>
+</section>
 
 </div><!-- .app-shell -->
 
