@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="PNDA-Cultura — Application agricole intelligente pour les fermiers d'Afrique centrale" />
+  <meta name="theme-color" content="#1B4D2A" />
+  <title>PNDA-Cultura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <style>
+    /* Styles inline spécifiques à index.html */
+    .ai-panel {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      align-items: flex-end;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .ai-inner {
+      background: var(--surface); border-radius: 28px 28px 0 0;
+      width: 100%; max-height: 75vh; display: flex; flex-direction: column;
+      padding: 20px;
+      animation: slideUp 0.3s cubic-bezier(0.2, 0, 0, 1);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .ai-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .ai-title {
+      font-size: 15px; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+      color: var(--primary-dark);
+    }
+    .ai-close {
+      background: var(--surface-container);
+      border: none; width: 36px; height: 36px;
+      border-radius: 100px; font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--on-surface-var);
+      transition: background 0.15s;
+    }
+    .ai-close:hover { background: var(--surface-variant); }
+    .ai-output {
+      flex: 1; overflow-y: auto;
+      font-size: 13.5px; line-height: 1.65;
+      color: var(--on-surface); padding-right: 4px;
+    }
+    .ai-loading {
+      color: var(--on-surface-var);
+      display: flex; align-items: center; gap: 10px;
+      padding: 20px 0;
+    }
+    .ai-loading::before {
+      content: '';
+      width: 18px; height: 18px;
+      border: 2.5px solid var(--primary-100);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .ai-msg p   { margin-bottom: 10px; }
+    .ai-msg strong { color: var(--primary-dark); font-weight: 700; }
+    .ai-error   { color: var(--error); }
+    #toast {
+      position: fixed; bottom: 100px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--on-surface); color: var(--surface);
+      padding: 12px 22px; border-radius: 100px;
+      font-size: 13.5px; font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s cubic-bezier(0.2,0,0,1), transform 0.3s cubic-bezier(0.2,0,0,1);
+      z-index: 200; white-space: nowrap;
+      box-shadow: var(--elev-3);
+    }
+    #toast.toast-show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.toast-error { background: var(--error); }
+
+    /* Bouton notification header */
+    .notif-btn {
+      background: rgba(255,255,255,0.12);
+      border: none; cursor: pointer;
+      width: 42px; height: 42px;
+      border-radius: 100px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      transition: background 0.15s;
+    }
+    .notif-btn:hover { background: rgba(255,255,255,0.22); }
+    .notif-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: #B3261E; color: white;
+      font-size: 10px; border-radius: 100px;
+      min-width: 18px; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px; font-weight: 700;
+      border: 2px solid var(--primary-dark);
+    }
+    .sale-total-box {
+      background: var(--primary-50);
+      border: 1px solid var(--primary-200);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+<!-- ══════════════════════════════════════
+     ACCUEIL — Tableau de bord
+══════════════════════════════════════ -->
+<section class="screen active" id="s-home">
+  <div class="dash-header">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
+      <div>
+        <div class="dash-greeting">
+          <span class="material-symbols-rounded" style="font-size:24px">eco</span>
+          Bonjour, Jean-Pierre
+        </div>
+        <div class="dash-date">Mardi 5 mai 2026 · Ferme Kalonji — Kasaï</div>
+      </div>
+      <button class="notif-btn" onclick="goTo('s-notif')" aria-label="Notifications">
+        <span class="material-symbols-rounded" style="font-size:22px;color:white">notifications</span>
+        <span class="notif-badge">5</span>
+      </button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-pill"><div class="stat-val">4,8 ha</div><div class="stat-lbl">Terres cultivées</div></div>
+      <div class="stat-pill"><div class="stat-val">142k FC</div><div class="stat-lbl">Bénéfice net/mois</div></div>
+      <div class="stat-pill"><div class="stat-val">5 alertes</div><div class="stat-lbl">En attente</div></div>
+    </div>
+  </div>
+
+  <div class="scroll-area">
+    <div class="alert-banner danger">
+      <span class="material-symbols-rounded alert-icon filled">vaccines</span>
+      <div><div class="alert-title">Vaccination bovins CBPP due dans 2 jours</div>
+      <div class="alert-msg">15 bovins · Contacter Dr. Mukeba aujourd'hui</div></div>
+    </div>
+    <div class="alert-banner warn">
+      <span class="material-symbols-rounded alert-icon filled">rainy</span>
+      <div><div class="alert-title">Pluie forte prévue demain (45 mm)</div>
+      <div class="alert-msg">Vérifier drainage parcelle A2 — risque érosion</div></div>
+    </div>
+
+    <div class="section-label">Modules</div>
+    <div class="module-grid">
+      <div class="module-card" onclick="goTo('s-parcelles')">
+        <span class="material-symbols-rounded module-card-icon">grass</span>
+        <div class="module-card-name">Mes Parcelles</div>
+        <span class="badge badge-green">4 cultures</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-elevage')">
+        <span class="material-symbols-rounded module-card-icon">pets</span>
+        <div class="module-card-name">Élevage</div>
+        <span class="badge badge-red">2 urgences</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-meteo')">
+        <span class="material-symbols-rounded module-card-icon">partly_cloudy_day</span>
+        <div class="module-card-name">Météo</div>
+        <span class="badge badge-orange">Pluie demain</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-stocks')">
+        <span class="material-symbols-rounded module-card-icon">inventory_2</span>
+        <div class="module-card-name">Stocks &amp; Intrants</div>
+        <span class="badge badge-orange">2 faibles</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-finances')">
+        <span class="material-symbols-rounded module-card-icon">savings</span>
+        <div class="module-card-name">Finances</div>
+        <span class="badge badge-green">+142k FC</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-marche')">
+        <span class="material-symbols-rounded module-card-icon">trending_up</span>
+        <div class="module-card-name">Marché</div>
+        <span class="badge badge-green">Prix live</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-pisciculture')">
+        <span class="material-symbols-rounded module-card-icon">set_meal</span>
+        <div class="module-card-name">Pisciculture</div>
+        <span class="badge badge-teal">2 bassins</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-journal')">
+        <span class="material-symbols-rounded module-card-icon">menu_book</span>
+        <div class="module-card-name">Journal terrain</div>
+        <span class="badge badge-blue">12 entrées</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-taches')">
+        <span class="material-symbols-rounded module-card-icon">task_alt</span>
+        <div class="module-card-name">Tâches</div>
+        <span class="badge badge-orange">5 à faire</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-sol')">
+        <span class="material-symbols-rounded module-card-icon">science</span>
+        <div class="module-card-name">Analyse Sol</div>
+        <span class="badge badge-green">Avril 2026</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-credit')">
+        <span class="material-symbols-rounded module-card-icon">account_balance</span>
+        <div class="module-card-name">Crédit &amp; Calc.</div>
+        <span class="badge badge-purple">Simuler</span>
+      </div>
+      <div class="module-card" onclick="goTo('s-comm')">
+        <span class="material-symbols-rounded module-card-icon">groups</span>
+        <div class="module-card-name">Communauté</div>
+        <span class="badge badge-blue">12 nouveaux</span>
+      </div>
+    </div>
+
+    <div class="section-label">Revenus — 6 derniers mois</div>
+    <div class="chart-wrap">
+      <div class="chart-bars">
+        <div class="chart-bar" style="height:45%"></div>
+        <div class="chart-bar" style="height:60%"></div>
+        <div class="chart-bar" style="height:38%"></div>
+        <div class="chart-bar" style="height:75%"></div>
+        <div class="chart-bar" style="height:55%"></div>
+        <div class="chart-bar highlight" style="height:88%"></div>
+      </div>
+      <div class="chart-labels">
+        <div class="chart-label">Déc</div><div class="chart-label">Jan</div>
+        <div class="chart-label">Fév</div><div class="chart-label">Mar</div>
+        <div class="chart-label">Avr</div><div class="chart-label">Mai ▲</div>
+      </div>
+    </div>
+
+    <div class="section-label">Conseil IA du jour</div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="row">
+        <span class="material-symbols-rounded row-icon filled">smart_toy</span>
+        <div class="row-body">
+          <div class="row-title">Stade floraison maïs détecté</div>
+          <div class="row-sub">Réduire l'arrosage, apporter du potassium cette semaine</div>
+        </div>
+      </div>
+      <div style="padding:0 14px 12px">
+        <button class="action-btn" onclick="askAI('Mon maïs est en stade floraison sur 2ha, pH sol 6.2. Quelles interventions précises dois-je faire cette semaine pour maximiser le rendement?')">
+          <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>
+          Demander des détails à l'IA
+          <span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     PARCELLES
+══════════════════════════════════════ -->
+<section class="screen" id="s-parcelles">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Mes Parcelles</div><div class="topbar-sub">Gestion des cultures</div></div>
+    <span class="topbar-action"><span class="material-symbols-rounded" style="font-size:22px">add</span></span>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-label">Surface totale</div><div class="metric-value">4,8 ha</div><div class="metric-sub">4 parcelles actives</div></div>
+      <div class="metric-card"><div class="metric-label">Récolte estimée</div><div class="metric-value">2,4 T</div><div class="metric-sub">Ce cycle</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span>Parcelle A1 — Maïs</span>
+        <span class="card-head-action" onclick="goTo('s-parcelle-detail')">Détails <span class="material-symbols-rounded" style="font-size:16px">arrow_forward</span></span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">location_on</span>
+        <div class="row-body"><div class="row-title">Champ Nord · 2,0 ha</div><div class="row-sub">Planté: 15 mars 2026</div></div>
+        <span class="badge badge-green">Floraison</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">water_drop</span>
+        <div class="row-body"><div class="row-title">Humidité du sol</div><div class="row-sub">Dernier arrosage: il y a 3j</div></div>
+        <div class="row-value">68%</div>
+      </div>
+      <div style="padding:6px 16px 12px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--on-surface-var);margin-bottom:4px"><span>Progression du cycle</span><span style="font-weight:600">72%</span></div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:72%"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Parcelle A2 — Riz</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">location_on</span>
+        <div class="row-body"><div class="row-title">Rizière Est · 1,8 ha</div><div class="row-sub">Planté: 2 avril 2026</div></div>
+        <span class="badge badge-orange">Croissance</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon filled" style="color:var(--error)">warning</span>
+        <div class="row-body"><div class="row-title">Risque érosion demain</div><div class="row-sub">Pluie 45mm — vérifier drainage aujourd'hui</div></div>
+        <span class="badge badge-red">Urgent</span>
+      </div>
+      <div style="padding:6px 16px 12px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--on-surface-var);margin-bottom:4px"><span>Progression du cycle</span><span style="font-weight:600">35%</span></div>
+        <div class="progress-wrap"><div class="progress-fill warn" style="width:35%"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Parcelle B1 — Manioc</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">location_on</span>
+        <div class="row-body"><div class="row-title">Champ Sud · 0,5 ha</div><div class="row-sub">Planté: 10 janv. 2026</div></div>
+        <span class="badge badge-teal">Récolte proche</span>
+      </div>
+      <div style="padding:6px 16px 12px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--on-surface-var);margin-bottom:4px"><span>Progression du cycle</span><span style="font-weight:600">90%</span></div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:90%;background:linear-gradient(90deg,var(--teal),#2aa8a8)"></div></div>
+      </div>
+    </div>
+
+    <div class="action-list">
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">calendar_month</span>Calendrier des semis &amp; récoltes<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">biotech</span>Historique des traitements<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="askAI('Maïs A1 en floraison 2ha pH6.2, riz A2 à 35% 1.8ha risque érosion, manioc B1 prêt à récolter 0.5ha. Quelles sont mes 3 priorités cette semaine?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Analyse IA de mes parcelles<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     DÉTAIL PARCELLE
+══════════════════════════════════════ -->
+<section class="screen" id="s-parcelle-detail">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Parcelle A1 — Maïs</div><div class="topbar-sub">Champ Nord · 2,0 ha</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="gauge-grid">
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--info)">68%</div><div class="gauge-label">Humidité sol</div><div class="gauge-bar"><div class="gauge-fill" style="width:68%;background:var(--info)"></div></div></div>
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--primary)">6.2</div><div class="gauge-label">pH sol</div><div class="gauge-bar"><div class="gauge-fill" style="width:62%;background:var(--primary)"></div></div></div>
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--tertiary)">34°C</div><div class="gauge-label">Temp. sol</div><div class="gauge-bar"><div class="gauge-fill" style="width:68%;background:var(--tertiary)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">Historique des interventions</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">science</span>
+        <div class="row-body"><div class="row-title">NPK 20-10-10 appliqué</div><div class="row-sub">28 avr. 2026 · 50 kg/ha</div></div>
+        <span class="badge badge-green">Fait</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">water_drop</span>
+        <div class="row-body"><div class="row-title">Irrigation goutte-à-goutte</div><div class="row-sub">2 mai 2026 · 3h</div></div>
+        <span class="badge badge-green">Fait</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">bug_report</span>
+        <div class="row-body"><div class="row-title">Traitement chenilles légionnaires</div><div class="row-sub">20 avr. 2026 · Pyréthrine 2L/ha</div></div>
+        <span class="badge badge-green">Fait</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Prévision rendement</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">agriculture</span>
+        <div class="row-body"><div class="row-title">Rendement estimé</div><div class="row-sub">Basé sur stade + météo + sol</div></div>
+        <div class="row-value text-green">3,2 T/ha</div>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">savings</span>
+        <div class="row-body"><div class="row-title">Valeur estimée à 350 FC/kg</div><div class="row-sub">Récolte fin juin 2026</div></div>
+        <div class="row-value text-green">2 240k FC</div>
+      </div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">add</span>Enregistrer une intervention<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="askAI('Maïs A1: 72% cycle, floraison, pH 6.2, humidité 68%, temp sol 34°C. Rendement estimé 3.2T/ha. Que faire maintenant pour maximiser et sécuriser la récolte?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Diagnostic IA complet<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     ÉLEVAGE
+══════════════════════════════════════ -->
+<section class="screen" id="s-elevage">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Élevage</div><div class="topbar-sub">Gestion du troupeau</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-label">Total animaux</div><div class="metric-value">60</div><div class="metric-sub">Bovins · Chèvres · Volailles</div></div>
+      <div class="metric-card"><div class="metric-label">Alertes santé</div><div class="metric-value" style="color:var(--error)">2</div><div class="metric-sub">Action requise</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">Bovins (15 têtes)</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon filled" style="color:var(--error)">vaccines</span>
+        <div class="row-body"><div class="row-title">Vaccination CBPP due dans 2 jours</div><div class="row-sub">Contacter Dr. Mukeba — +243 81 234 5678</div></div>
+        <span class="badge badge-red">Urgent</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">scale</span>
+        <div class="row-body"><div class="row-title">Poids moyen</div><div class="row-sub">Pesée le 1er mai 2026</div></div>
+        <div class="row-value">285 kg</div>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">grass</span>
+        <div class="row-body"><div class="row-title">Alimentation — stock OK</div><div class="row-sub">Fourrage + concentré</div></div>
+        <span class="badge badge-green">Normal</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Chèvres (5 têtes)</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">pregnant_woman</span>
+        <div class="row-body"><div class="row-title">3 chèvres en gestation</div><div class="row-sub">Mise bas prévue 20 mai 2026</div></div>
+        <span class="badge badge-orange">Surveiller</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">water_full</span>
+        <div class="row-body"><div class="row-title">Production lait ce mois</div></div>
+        <div class="row-value">42 L</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Volailles (40 têtes)</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">egg</span>
+        <div class="row-body"><div class="row-title">Production cette semaine</div></div>
+        <div class="row-value">210 œufs</div>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">calendar_month</span>
+        <div class="row-body"><div class="row-title">Prochain déparasitage</div><div class="row-sub">Dans 12 jours</div></div>
+        <span class="badge badge-blue">Planifié</span>
+      </div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">local_hospital</span>Registre sanitaire complet<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">restaurant</span>Plan d'alimentation hebdomadaire<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">bar_chart</span>Courbe de croissance / poids<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="askAI('15 bovins: vaccination CBPP dans 2 jours. 5 chèvres dont 3 gestantes (mise bas 20 mai). 40 volailles OK. Quelles sont mes priorités sanitaires et comment organiser la semaine?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Plan vétérinaire IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     STOCKS & INTRANTS
+══════════════════════════════════════ -->
+<section class="screen" id="s-stocks">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Stocks &amp; Intrants</div><div class="topbar-sub">Gestion des ressources</div></div>
+    <span class="topbar-action"><span class="material-symbols-rounded" style="font-size:22px">add</span></span>
+  </div>
+  <div class="scroll-area">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'intrants')">Intrants</button>
+      <button class="tab" onclick="switchTab(this,'recoltes')">Récoltes stockées</button>
+      <button class="tab" onclick="switchTab(this,'materiel')">Matériel</button>
+    </div>
+
+    <div data-tab="intrants">
+      <div class="section-label">Engrais &amp; Produits phytosanitaires</div>
+      <div class="card">
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">science</span>
+          <div class="row-body"><div class="row-title">NPK 20-10-10</div><div class="row-sub">Utilisé: 50 kg cette semaine</div></div>
+          <div><div class="row-value">80 kg</div><span class="badge badge-orange" style="display:block;margin-top:4px">Stock faible</span></div>
+        </div>
+        <div style="padding:0 16px 12px">
+          <div class="progress-wrap"><div class="progress-fill warn" style="width:27%"></div></div>
+          <div style="font-size:10.5px;color:var(--on-surface-var);margin-top:4px">27% restant — commander sous 5 jours</div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">eco</span>
+          <div class="row-body"><div class="row-title">Urée 46%</div><div class="row-sub">Engrais azoté</div></div>
+          <div><div class="row-value">150 kg</div><span class="badge badge-green" style="display:block;margin-top:4px">OK</span></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">biotech</span>
+          <div class="row-body"><div class="row-title">Pyréthrine insecticide</div><div class="row-sub">Traitement chenilles légionnaires</div></div>
+          <div><div class="row-value">2,5 L</div><span class="badge badge-red" style="display:block;margin-top:4px">Rupture proche</span></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">medication</span>
+          <div class="row-body"><div class="row-title">Vaccin CBPP bovin</div><div class="row-sub">Réfrigéré · 18 doses</div></div>
+          <div><div class="row-value">18 doses</div><span class="badge badge-green" style="display:block;margin-top:4px">OK</span></div>
+        </div>
+      </div>
+      <div class="action-list">
+        <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">shopping_cart</span>Créer une commande fournisseur<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+        <button class="action-btn" onclick="askAI('Stock NPK: 80kg restants (27%), pyréthrine: 2.5L quasi épuisé. Cultures: maïs 2ha, riz 1.8ha, manioc 0.5ha. Quelles quantités commander pour les 3 prochains mois?')">
+          <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Calculer les besoins IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <div data-tab="recoltes" style="display:none">
+      <div class="card" style="margin-top:12px">
+        <div class="card-head">Stocks de récolte</div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">agriculture</span>
+          <div class="row-body"><div class="row-title">Maïs séché</div><div class="row-sub">Silo A · Récolte mars 2026</div></div>
+          <div class="row-value">320 kg</div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">compost</span>
+          <div class="row-body"><div class="row-title">Manioc frais</div><div class="row-sub">Entreposage ombragé · Périssable !</div></div>
+          <div><div class="row-value">180 kg</div><span class="badge badge-orange" style="display:block;margin-top:4px">5 jours max</span></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">egg</span>
+          <div class="row-body"><div class="row-title">Œufs de poule</div><div class="row-sub">Collecte semaine courante</div></div>
+          <div><div class="row-value">210 u.</div><span class="badge badge-green" style="display:block;margin-top:4px">Frais</span></div>
+        </div>
+      </div>
+      <div class="action-list">
+        <button class="action-btn" onclick="askAI('180kg manioc frais périssable dans 5 jours, 210 œufs frais. Prix marché: manioc 450FC/kg, œufs 150FC/u. Comment vendre rapidement et rentablement?')">
+          <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Stratégie vente urgente IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <div data-tab="materiel" style="display:none">
+      <div class="card" style="margin-top:12px">
+        <div class="card-head">Équipements agricoles</div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">agriculture</span>
+          <div class="row-body"><div class="row-title">Motoculteur Honda F220</div><div class="row-sub">Révision: 10 avr. 2026</div></div>
+          <span class="badge badge-green">Opérationnel</span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">water_drop</span>
+          <div class="row-body"><div class="row-title">Pompe à eau immergée</div><div class="row-sub">Débit: 1 200 L/h</div></div>
+          <span class="badge badge-green">OK</span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">build</span>
+          <div class="row-body"><div class="row-title">Pulvérisateur 15L</div><div class="row-sub">Joint à remplacer</div></div>
+          <span class="badge badge-orange">À réparer</span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">bolt</span>
+          <div class="row-body"><div class="row-title">Groupe électrogène 5kW</div><div class="row-sub">Carburant: 8L restant</div></div>
+          <span class="badge badge-red">Faible</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     FINANCES
+══════════════════════════════════════ -->
+<section class="screen" id="s-finances">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Finances</div><div class="topbar-sub">Comptabilité agricole — Mai 2026</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-label">Revenus mai</div><div class="metric-value text-green">209 500 FC</div><div class="metric-sub">↑ +18% vs avril</div></div>
+      <div class="metric-card"><div class="metric-label">Dépenses mai</div><div class="metric-value" style="color:var(--error)">67 200 FC</div><div class="metric-sub">Intrants + main d'œuvre</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">Compte de résultat — Mai 2026</div>
+      <div class="pl-row"><div class="pl-label">Vente Maïs (50 kg)</div><div class="pl-amount pl-pos">+17 500 FC</div></div>
+      <div class="pl-row"><div class="pl-label">Vente Manioc (100 kg)</div><div class="pl-amount pl-pos">+45 000 FC</div></div>
+      <div class="pl-row"><div class="pl-label">Vente Œufs (840 u.)</div><div class="pl-amount pl-pos">+126 000 FC</div></div>
+      <div class="pl-row"><div class="pl-label">Lait chèvres (42 L)</div><div class="pl-amount pl-pos">+21 000 FC</div></div>
+      <div style="height:0.5px;background:var(--outline-variant);margin:2px 16px"></div>
+      <div class="pl-row"><div class="pl-label">Engrais NPK acheté</div><div class="pl-amount pl-neg">-15 000 FC</div></div>
+      <div class="pl-row"><div class="pl-label">Main d'œuvre (3 pers.)</div><div class="pl-amount pl-neg">-24 000 FC</div></div>
+      <div class="pl-row"><div class="pl-label">Carburant &amp; transport</div><div class="pl-amount pl-neg">-9 200 FC</div></div>
+      <div class="pl-row"><div class="pl-label">Produits vétérinaires</div><div class="pl-amount pl-neg">-19 000 FC</div></div>
+      <div class="pl-row total"><div class="pl-label fw-500">Bénéfice net</div><div class="pl-amount pl-pos" style="font-size:15px">+142 300 FC</div></div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn" onclick="goTo('s-nouvelle-vente')"><span class="material-symbols-rounded action-btn-icon">add</span>Enregistrer une vente<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">remove</span>Enregistrer une dépense<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-credit')"><span class="material-symbols-rounded action-btn-icon">account_balance</span>Simuler un crédit agricole<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="askAI('Ma ferme gagne 142 300 FC/mois net. Revenus: maïs 17 500, manioc 45 000, œufs 126 000, lait 21 000. Dépenses: intrants 15k, main-oeuvre 24k, carburant 9k, vétérinaire 19k. Comment optimiser ma rentabilité et dans quoi réinvestir?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Analyse rentabilité IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     NOUVELLE VENTE
+══════════════════════════════════════ -->
+<section class="screen" id="s-nouvelle-vente">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-finances')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Enregistrer une vente</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="form-area">
+      <div class="form-row">
+        <label class="form-label">Produit vendu</label>
+        <select class="form-select" id="sale-product">
+          <option>Maïs</option><option>Manioc</option><option>Riz</option>
+          <option>Œufs</option><option>Lait chèvre</option><option>Poulets</option>
+          <option>Tilapia</option><option>Poisson-chat</option><option>Autre...</option>
+        </select>
+      </div>
+      <div class="form-row-2">
+        <div>
+          <label class="form-label">Quantité (kg / unités)</label>
+          <input class="form-input" type="number" id="sale-qty" placeholder="ex: 100" min="0">
+        </div>
+        <div>
+          <label class="form-label">Prix unitaire (FC)</label>
+          <input class="form-input" type="number" id="sale-price" placeholder="ex: 350" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Acheteur</label>
+        <input class="form-input" type="text" placeholder="Nom ou marché">
+      </div>
+      <div class="form-row-2">
+        <div>
+          <label class="form-label">Date</label>
+          <input class="form-input" type="date" value="2026-05-05">
+        </div>
+        <div>
+          <label class="form-label">Paiement</label>
+          <select class="form-select">
+            <option>Espèces</option>
+            <option>Mobile Money</option>
+            <option>Virement</option>
+            <option>Crédit (à payer)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" placeholder="Observations sur la vente..."></textarea>
+      </div>
+      <div class="sale-total-box">
+        <span style="font-size:12px;color:var(--on-surface-var)">Montant total : </span>
+        <span id="sale-total" style="font-size:17px;font-weight:700;color:var(--primary-dark)">—</span>
+      </div>
+      <button class="form-btn" onclick="saveSale()">
+        <span class="material-symbols-rounded" style="font-size:20px">save</span>
+        Enregistrer la vente
+      </button>
+      <button class="form-btn secondary" onclick="goTo('s-finances')">Annuler</button>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     MÉTÉO
+══════════════════════════════════════ -->
+<section class="screen" id="s-meteo">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Météo Agricole</div><div class="topbar-sub">Kasaï · 5 mai 2026</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="card">
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--tertiary)">wb_sunny</span>
+        <div class="row-body"><div class="row-title">Aujourd'hui — Ensoleillé</div><div class="row-sub">Humidité 72% · Vent 12 km/h</div></div>
+        <div class="row-value">28°C</div>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--info)">rainy</span>
+        <div class="row-body"><div class="row-title">Demain — Pluie forte</div><div class="row-sub">Précipitations : 45 mm prévus</div></div>
+        <div class="row-value" style="color:var(--info)">24°C</div>
+      </div>
+    </div>
+    <div class="section-label">Prévisions 7 jours</div>
+    <div class="weather-grid">
+      <div class="weather-day today"><div class="weather-day-name">Mar</div><div class="weather-day-icon"><span class="material-symbols-rounded" style="font-size:24px;color:var(--tertiary)">wb_sunny</span></div><div class="weather-day-temp">28°</div><div class="weather-day-rain">0mm</div></div>
+      <div class="weather-day"><div class="weather-day-name">Mer</div><div class="weather-day-icon"><span class="material-symbols-rounded" style="font-size:24px;color:var(--info)">rainy</span></div><div class="weather-day-temp">24°</div><div class="weather-day-rain" style="font-weight:600">45mm</div></div>
+      <div class="weather-day"><div class="weather-day-name">Jeu</div><div class="weather-day-icon"><span class="material-symbols-rounded" style="font-size:24px;color:var(--info)">cloud</span></div><div class="weather-day-temp">26°</div><div class="weather-day-rain">12mm</div></div>
+      <div class="weather-day"><div class="weather-day-name">Ven</div><div class="weather-day-icon"><span class="material-symbols-rounded" style="font-size:24px;color:var(--tertiary)">wb_sunny</span></div><div class="weather-day-temp">29°</div><div class="weather-day-rain">0mm</div></div>
+      <div class="weather-day"><div class="weather-day-name">Sam</div><div class="weather-day-icon"><span class="material-symbols-rounded" style="font-size:24px;color:var(--info)">partly_cloudy_day</span></div><div class="weather-day-temp">27°</div><div class="weather-day-rain">5mm</div></div>
+    </div>
+    <div class="section-label">Impact sur mes cultures</div>
+    <div class="alert-banner danger">
+      <span class="material-symbols-rounded alert-icon filled">warning</span>
+      <div><div class="alert-title">Risque érosion parcelle A2 (riz)</div><div class="alert-msg">45mm peuvent éroder les talus. Vérifier les canaux de drainage aujourd'hui avant la nuit.</div></div>
+    </div>
+    <div class="alert-banner warn">
+      <span class="material-symbols-rounded alert-icon filled">water_drop</span>
+      <div><div class="alert-title">Ne pas arroser les 3 prochains jours</div><div class="alert-msg">Pluies suffisantes. Économisez le carburant de la pompe à eau.</div></div>
+    </div>
+    <div class="alert-banner info">
+      <span class="material-symbols-rounded alert-icon filled">calendar_month</span>
+      <div><div class="alert-title">Bon moment pour semer vendredi</div><div class="alert-msg">Après les pluies, sol humide idéal pour de nouveaux semis de haricots.</div></div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn" onclick="askAI('Pluie de 45mm prévue demain sur ma ferme au Kasaï. J\'ai du riz à 35% sur terrain incliné et du maïs en floraison. Que dois-je faire aujourd\'hui pour préparer et protéger mes cultures?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Plan d'action avant la pluie IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     MARCHÉ
+══════════════════════════════════════ -->
+<section class="screen" id="s-marche">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Prix du Marché</div><div class="topbar-sub">Kasaï · Mis à jour aujourd'hui</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'prix')">Prix live</button>
+      <button class="tab" onclick="switchTab(this,'acheteurs')">Acheteurs</button>
+      <button class="tab" onclick="switchTab(this,'tendances')">Tendances</button>
+    </div>
+    <div data-tab="prix">
+      <div class="card" style="margin-top:12px">
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">agriculture</span>
+          <div class="row-body"><div class="row-title">Maïs</div><div class="row-sub">Marché central Mbuji-Mayi</div></div>
+          <div><div class="row-value">350 FC/kg</div><div style="font-size:10px;color:var(--primary);text-align:right;font-weight:600">▲ +5%</div></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">compost</span>
+          <div class="row-body"><div class="row-title">Manioc</div><div class="row-sub">Marché central</div></div>
+          <div><div class="row-value">450 FC/kg</div><div style="font-size:10px;color:var(--primary);text-align:right;font-weight:600">▲ +2%</div></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">grass</span>
+          <div class="row-body"><div class="row-title">Riz local</div><div class="row-sub">Marché Kananga</div></div>
+          <div><div class="row-value">620 FC/kg</div><div style="font-size:10px;color:var(--error);text-align:right;font-weight:600">▼ -1%</div></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">set_meal</span>
+          <div class="row-body"><div class="row-title">Tilapia frais</div><div class="row-sub">Marché poissons</div></div>
+          <div><div class="row-value">1 200 FC/kg</div><div style="font-size:10px;color:var(--primary);text-align:right;font-weight:600">▲ +8%</div></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">egg</span>
+          <div class="row-body"><div class="row-title">Œufs (unité)</div><div class="row-sub">Prix plateau</div></div>
+          <div><div class="row-value">150 FC/u.</div><div style="font-size:10px;color:var(--primary);text-align:right;font-weight:600">▲ +3%</div></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">water_full</span>
+          <div class="row-body"><div class="row-title">Lait de chèvre</div><div class="row-sub">Vente directe</div></div>
+          <div><div class="row-value">500 FC/L</div><div style="font-size:10px;color:var(--on-surface-var);text-align:right;font-weight:600">stable</div></div>
+        </div>
+      </div>
+    </div>
+    <div data-tab="acheteurs" style="display:none">
+      <div class="card" style="margin-top:12px">
+        <div class="card-head">Carnet d'acheteurs</div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">person</span>
+          <div class="row-body"><div class="row-title">Mutombo Trading</div><div class="row-sub">Maïs · Manioc · +243 81 234 5678</div></div>
+          <span class="badge badge-green">Fiable</span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">store</span>
+          <div class="row-body"><div class="row-title">Épicerie Centrale Kananga</div><div class="row-sub">Œufs · Légumes · Paiement rapide</div></div>
+          <span class="badge badge-green">Premium</span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">factory</span>
+          <div class="row-body"><div class="row-title">MINOTERIE du Kasaï</div><div class="row-sub">Maïs en gros · 500 kg min · +243 99 876</div></div>
+          <span class="badge badge-blue">Industrie</span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">person</span>
+          <div class="row-body"><div class="row-title">Mama Cécile — marché local</div><div class="row-sub">Légumes · Paiement jour même</div></div>
+          <span class="badge badge-orange">Occasionnel</span>
+        </div>
+      </div>
+      <div class="action-list">
+        <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">person_add</span>Ajouter un acheteur<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      </div>
+    </div>
+    <div data-tab="tendances" style="display:none">
+      <div class="section-label">Prix Maïs — 6 mois (FC/kg)</div>
+      <div class="chart-wrap">
+        <div class="chart-bars">
+          <div class="chart-bar" style="height:58%"></div>
+          <div class="chart-bar" style="height:50%"></div>
+          <div class="chart-bar" style="height:62%"></div>
+          <div class="chart-bar" style="height:70%"></div>
+          <div class="chart-bar" style="height:78%"></div>
+          <div class="chart-bar highlight" style="height:88%"></div>
+        </div>
+        <div class="chart-labels">
+          <div class="chart-label">Déc</div><div class="chart-label">Jan</div>
+          <div class="chart-label">Fév</div><div class="chart-label">Mar</div>
+          <div class="chart-label">Avr</div><div class="chart-label">Mai ▲</div>
+        </div>
+      </div>
+      <div class="action-list">
+        <button class="action-btn" onclick="askAI('Le maïs est en hausse depuis 6 mois, actuellement 350FC/kg +5%. J\'ai 320kg en stock et une récolte de 2T prévue fin juin. Dois-je vendre maintenant ou attendre? Quelle stratégie de vente adopter?')">
+          <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Analyse marché &amp; timing vente IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     JOURNAL DE TERRAIN
+══════════════════════════════════════ -->
+<section class="screen" id="s-journal">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Journal de terrain</div><div class="topbar-sub">Historique des activités</div></div>
+    <button class="topbar-action" onclick="goTo('s-newjournal')"><span class="material-symbols-rounded" style="font-size:22px">add</span></button>
+  </div>
+  <div class="scroll-area">
+    <div class="action-list">
+      <button class="action-btn" onclick="goTo('s-newjournal')"><span class="material-symbols-rounded action-btn-icon">edit</span>Nouvelle entrée<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+    </div>
+    <div class="journal-entry">
+      <div class="journal-date">5 mai 2026 · 08:30</div>
+      <div class="journal-title">Inspection parcelle A2 — risque drainage avant pluie</div>
+      <div class="journal-body">Visité la rizière. Canal principal partiellement bouché par des herbes. Nettoyage urgent avant les 45mm prévus demain. Stade croissance normal, aucun signe de maladie.</div>
+      <div class="journal-tags"><span class="badge badge-blue">Riz</span><span class="badge badge-orange">Drainage</span><span class="badge badge-red">Urgent</span></div>
+    </div>
+    <div class="journal-entry">
+      <div class="journal-date">3 mai 2026 · 14:00</div>
+      <div class="journal-title">Application NPK parcelle A1</div>
+      <div class="journal-body">Épandage 50 kg NPK 20-10-10 sur 2ha maïs en floraison. Conditions: sec, 27°C. Bonne répartition uniforme. Stock restant: 80 kg.</div>
+      <div class="journal-tags"><span class="badge badge-green">Maïs</span><span class="badge badge-teal">Engrais</span></div>
+    </div>
+    <div class="journal-entry">
+      <div class="journal-date">28 avr. 2026 · 09:00</div>
+      <div class="journal-title">Vaccination volailles Newcastle</div>
+      <div class="journal-body">40 poulets vaccinés par voie oculaire. Aucune réaction adverse. Prochain rappel dans 3 mois.</div>
+      <div class="journal-tags"><span class="badge badge-orange">Élevage</span><span class="badge badge-green">Fait</span></div>
+    </div>
+    <div class="journal-entry">
+      <div class="journal-date">20 avr. 2026 · 10:30</div>
+      <div class="journal-title">Traitement chenilles légionnaires — Pyréthrine</div>
+      <div class="journal-body">Application 2L/ha de pyréthrine sur maïs A1. Attaque détectée en bordure ouest. Résultat visible en 48h. Stock pyréthrine quasi épuisé.</div>
+      <div class="journal-tags"><span class="badge badge-green">Maïs</span><span class="badge badge-red">Ravageurs</span><span class="badge badge-orange">Stock faible</span></div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     NOUVELLE ENTRÉE JOURNAL
+══════════════════════════════════════ -->
+<section class="screen" id="s-newjournal">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-journal')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Nouvelle entrée terrain</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="form-area">
+      <div class="form-row">
+        <label class="form-label">Titre de l'activité</label>
+        <input class="form-input" id="journal-title" type="text" placeholder="ex: Traitement insecticide maïs">
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Date</label><input class="form-input" type="date" value="2026-05-05"></div>
+        <div><label class="form-label">Heure</label><input class="form-input" type="time" value="08:00"></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Parcelle / Lieu</label>
+        <select class="form-select">
+          <option>Parcelle A1 (Maïs)</option><option>Parcelle A2 (Riz)</option>
+          <option>Parcelle B1 (Manioc)</option><option>Étable bovins</option>
+          <option>Enclos chèvres</option><option>Poulailler</option>
+          <option>Bassin 1 Tilapia</option><option>Bassin 2 Poisson-chat</option>
+          <option>Magasin / Silo</option><option>Général</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Type d'activité</label>
+        <select class="form-select">
+          <option>Observation / Inspection</option><option>Traitement phytosanitaire</option>
+          <option>Fertilisation</option><option>Arrosage / Irrigation</option>
+          <option>Semis / Plantation</option><option>Récolte</option>
+          <option>Soin animal / Vaccination</option><option>Maintenance matériel</option>
+          <option>Vente</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Description détaillée</label>
+        <textarea class="form-textarea" id="journal-body" style="min-height:110px" placeholder="Décrivez ce que vous avez fait, observé, les quantités utilisées..."></textarea>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Photo (optionnel)</label>
+        <button class="form-btn secondary" style="width:auto;padding:10px 20px">
+          <span class="material-symbols-rounded" style="font-size:20px">photo_camera</span>
+          Ajouter une photo
+        </button>
+      </div>
+      <button class="form-btn" onclick="saveJournalEntry()">
+        <span class="material-symbols-rounded" style="font-size:20px">save</span>
+        Enregistrer l'entrée
+      </button>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     TÂCHES
+══════════════════════════════════════ -->
+<section class="screen" id="s-taches">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Tâches &amp; Planning</div><div class="topbar-sub">Cette semaine</div></div>
+    <span class="topbar-action"><span class="material-symbols-rounded" style="font-size:22px">add</span></span>
+  </div>
+  <div class="scroll-area">
+    <div class="section-label">Aujourd'hui · 5 mai</div>
+    <div class="card">
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Nettoyer canal drainage parcelle A2</div><div class="row-sub">Avant la pluie de demain</div></div>
+        <span class="badge badge-red">Urgent</span>
+      </div>
+      <div class="task-row">
+        <div class="task-check done">✓</div>
+        <div class="row-body"><div class="task-text done">Inspecter stock NPK en magasin</div><div class="row-sub">Fait à 08h00</div></div>
+      </div>
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Appeler Dr. Mukeba — rdv vaccination bovins</div><div class="row-sub">CBPP due dans 2 jours</div></div>
+        <span class="badge badge-red">Urgent</span>
+      </div>
+    </div>
+    <div class="section-label">Demain · 6 mai</div>
+    <div class="card">
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Surveiller drainage pendant la pluie</div><div class="row-sub">Vérifier canal toutes les 2h</div></div>
+        <span class="badge badge-orange">Important</span>
+      </div>
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Vaccination 15 bovins CBPP</div><div class="row-sub">Dr. Mukeba · 08h00 · Étable</div></div>
+        <span class="badge badge-red">Critique</span>
+      </div>
+    </div>
+    <div class="section-label">Cette semaine</div>
+    <div class="card">
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Commander NPK (min 100 kg)</div><div class="row-sub">Agro-Kasaï · Stock critique</div></div>
+        <span class="badge badge-orange">Cette semaine</span>
+      </div>
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Vendre manioc frais (180 kg)</div><div class="row-sub">Périssable dans 5 jours</div></div>
+        <span class="badge badge-orange">Cette semaine</span>
+      </div>
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Réparer joint pulvérisateur 15L</div><div class="row-sub">Pièce à acheter au marché</div></div>
+      </div>
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Peser les 3 chèvres gestantes</div><div class="row-sub">Mise bas prévue 20 mai</div></div>
+      </div>
+      <div class="task-row">
+        <div class="task-check"></div>
+        <div class="row-body"><div class="task-text">Faire le plein groupe électrogène</div><div class="row-sub">8L restant — insuffisant</div></div>
+      </div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn" onclick="askAI('Tâches urgentes: drainage avant pluie demain 45mm, vacciner 15 bovins CBPP dans 2 jours, vendre 180kg manioc dans 5 jours, commander NPK. Comment organiser efficacement ma semaine?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Optimiser mon planning IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     ANALYSE DE SOL
+══════════════════════════════════════ -->
+<section class="screen" id="s-sol">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Analyse de Sol</div><div class="topbar-sub">Dernière analyse: avril 2026</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="section-label">Parcelle A1 — Résultats laboratoire</div>
+    <div class="gauge-grid">
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--primary)">6.2</div><div class="gauge-label">pH</div><div class="gauge-bar"><div class="gauge-fill" style="width:62%;background:var(--primary)"></div></div></div>
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--tertiary)">2.1%</div><div class="gauge-label">Mat. organique</div><div class="gauge-bar"><div class="gauge-fill" style="width:42%;background:var(--tertiary)"></div></div></div>
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--info)">68%</div><div class="gauge-label">Argile</div><div class="gauge-bar"><div class="gauge-fill" style="width:68%;background:var(--info)"></div></div></div>
+    </div>
+    <div class="gauge-grid">
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--primary-light)">Moyen</div><div class="gauge-label">Azote (N)</div><div class="gauge-bar"><div class="gauge-fill" style="width:55%;background:var(--primary-light)"></div></div></div>
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--error)">Faible</div><div class="gauge-label">Phosphore (P)</div><div class="gauge-bar"><div class="gauge-fill" style="width:25%;background:var(--error)"></div></div></div>
+      <div class="gauge-card"><div class="gauge-value" style="color:var(--primary)">Bon</div><div class="gauge-label">Potassium (K)</div><div class="gauge-bar"><div class="gauge-fill" style="width:72%;background:var(--primary)"></div></div></div>
+    </div>
+    <div class="alert-banner warn">
+      <span class="material-symbols-rounded alert-icon filled">biotech</span>
+      <div><div class="alert-title">Phosphore déficient</div><div class="alert-msg">Recommandation: 30 kg/ha superphosphate avant prochain cycle. Matière organique à améliorer (cible: 3.5%).</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">Recommandations de fertilisation</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">agriculture</span>
+        <div class="row-body"><div class="row-title">Maïs — cycle actuel</div><div class="row-sub">NPK en cours suffisant. Attendre la récolte.</div></div>
+        <span class="badge badge-green">OK</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">grass</span>
+        <div class="row-body"><div class="row-title">Avant prochain cycle riz</div><div class="row-sub">30 kg/ha superphosphate + chaux si pH descend</div></div>
+        <span class="badge badge-orange">Planifier</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">compost</span>
+        <div class="row-body"><div class="row-title">Améliorer matière organique</div><div class="row-sub">Compostage: enfouir résidus de récolte après juin</div></div>
+        <span class="badge badge-blue">Long terme</span>
+      </div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn" onclick="askAI('Sol parcelle A1: pH 6.2, matière organique 2.1% (faible), phosphore déficient, azote moyen, potassium bon. Culture actuelle: maïs en floraison. Quelle stratégie de fertilisation sur 2 ans pour améliorer durablement mon sol?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Plan fertilisation sol IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     CRÉDIT AGRICOLE
+══════════════════════════════════════ -->
+<section class="screen" id="s-credit">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Crédit Agricole</div><div class="topbar-sub">Calculateur de prêt</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="loan-result">
+      <div class="loan-item"><div class="loan-value" id="loan-monthly">—</div><div class="loan-label">Mensualité (FC)</div></div>
+      <div class="loan-item"><div class="loan-value" id="loan-total">—</div><div class="loan-label">Total remboursé</div></div>
+      <div class="loan-item"><div class="loan-value" id="loan-interest">—</div><div class="loan-label">Intérêts totaux</div></div>
+      <div class="loan-item"><div class="loan-value" id="loan-ratio">—</div><div class="loan-label">% de vos revenus</div></div>
+    </div>
+    <div class="form-area">
+      <div class="form-row">
+        <label class="form-label">Montant du prêt (FC)</label>
+        <input class="form-input" id="loan-amount" type="number" placeholder="ex: 500 000" oninput="calcLoan()">
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Taux d'intérêt (%/an)</label><input class="form-input" id="loan-rate" type="number" value="18" placeholder="ex: 18" oninput="calcLoan()"></div>
+        <div><label class="form-label">Durée (mois)</label><input class="form-input" id="loan-months" type="number" value="12" placeholder="ex: 12" oninput="calcLoan()"></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Vos revenus nets mensuels (FC)</label>
+        <input class="form-input" id="loan-income" type="number" value="142300" oninput="calcLoan()">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Objet du crédit</label>
+        <select class="form-select">
+          <option>Achat intrants / engrais</option><option>Achat matériel agricole</option>
+          <option>Extension des parcelles</option><option>Achat animaux</option>
+          <option>Construction (silo, étable)</option><option>Fonds de roulement</option>
+        </select>
+      </div>
+      <button class="form-btn" onclick="askAI('Je cherche un crédit agricole de 500 000 FC. Revenus nets: 142 300 FC/mois. Objet: achat engrais et matériel. Quelles institutions de microfinance agricole en RDC proposent les meilleures conditions et comment y accéder?')">
+        <span class="material-symbols-rounded" style="font-size:20px">smart_toy</span>
+        Trouver un crédit adapté IA
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     PISCICULTURE
+══════════════════════════════════════ -->
+<section class="screen" id="s-pisciculture">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Pisciculture</div><div class="topbar-sub">Gestion des bassins</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid">
+      <div class="metric-card"><div class="metric-label">Poissons total</div><div class="metric-value">730</div><div class="metric-sub">2 espèces · 2 bassins</div></div>
+      <div class="metric-card"><div class="metric-label">Récolte estimée</div><div class="metric-value">185 kg</div><div class="metric-sub">Dans ~45 jours</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">Bassin 1 — Tilapia</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">set_meal</span>
+        <div class="row-body"><div class="row-title">450 tilapias</div><div class="row-sub">Surface: 120m² · Profondeur 1,2m</div></div>
+        <span class="badge badge-green">Normal</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">water_drop</span>
+        <div class="row-body"><div class="row-title">Qualité eau</div><div class="row-sub">pH 7.1 · O₂ 6.2 mg/L · Temp 26°C</div></div>
+        <span class="badge badge-green">Optimal</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">scale</span>
+        <div class="row-body"><div class="row-title">Poids moyen</div><div class="row-sub">Contrôle 28 avr. 2026</div></div>
+        <div class="row-value">280 g</div>
+      </div>
+      <div style="padding:6px 16px 12px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--on-surface-var);margin-bottom:4px"><span>Cycle d'élevage</span><span style="font-weight:600">68% — récolte dans ~45j</span></div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:68%"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">Bassin 2 — Poisson-chat</div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">phishing</span>
+        <div class="row-body"><div class="row-title">280 poissons-chats</div><div class="row-sub">Surface: 80m²</div></div>
+        <span class="badge badge-green">Normal</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">water_drop</span>
+        <div class="row-body"><div class="row-title">Qualité eau</div><div class="row-sub">pH 7.3 · Légère turbidité observée</div></div>
+        <span class="badge badge-orange">À surveiller</span>
+      </div>
+    </div>
+    <div class="action-list">
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">set_meal</span>Plan d'alimentation journalier<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">bar_chart</span>Courbe de croissance<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="askAI('Bassin 1 tilapia: 450 poissons, pH 7.1, O2 6.2mg/L, 26°C, poids 280g, 68% du cycle. Bassin 2 poisson-chat: pH 7.3 légèrement turbide. Comment optimiser la croissance et corriger la turbidité?')">
+        <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Conseils pisciculture IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     COMMUNAUTÉ
+══════════════════════════════════════ -->
+<section class="screen" id="s-comm">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Communauté</div><div class="topbar-sub">Forum · Vidéos · Challenges</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'forum')">Forum</button>
+      <button class="tab" onclick="switchTab(this,'videos')">Vidéos</button>
+      <button class="tab" onclick="switchTab(this,'challenges')">Challenges</button>
+    </div>
+    <div data-tab="forum">
+      <div class="action-list" style="padding-top:12px">
+        <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">edit</span>Poster une question<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      </div>
+      <div class="journal-entry">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+          <div style="width:36px;height:36px;border-radius:100px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">KM</div>
+          <div><div style="font-size:13.5px;font-weight:600">Kabongo Mutombo</div><div style="font-size:10.5px;color:var(--on-surface-var)">Il y a 2h · Kasaï · ⭐ Expert</div></div>
+        </div>
+        <div class="journal-title">Chenilles légionnaires — traitement naturel efficace?</div>
+        <div class="journal-body">Mes cultures sont attaquées depuis 3 semaines. Karate trop cher. Quelqu'un a une solution naturelle économique accessible aux petits agriculteurs?</div>
+        <div style="display:flex;gap:16px;margin-top:11px;font-size:12px;color:var(--on-surface-var);align-items:center">
+          <span style="display:flex;align-items:center;gap:4px"><span class="material-symbols-rounded" style="font-size:16px">chat</span>12</span>
+          <span style="display:flex;align-items:center;gap:4px"><span class="material-symbols-rounded" style="font-size:16px">thumb_up</span>24</span>
+          <span style="color:var(--primary);cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:600" onclick="askAI('Traitement naturel et économique contre les chenilles légionnaires du maïs en Afrique centrale. Solutions accessibles aux petits agriculteurs avec peu de moyens.')">
+            <span class="material-symbols-rounded filled" style="font-size:16px">smart_toy</span>IA
+          </span>
+        </div>
+      </div>
+      <div class="journal-entry">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+          <div style="width:36px;height:36px;border-radius:100px;background:linear-gradient(135deg,var(--info),#4a8bd4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">AF</div>
+          <div><div style="font-size:13.5px;font-weight:600">Amina Fatou</div><div style="font-size:10.5px;color:var(--on-surface-var)">Hier · Lubumbashi</div></div>
+        </div>
+        <div class="journal-title">Protocole vaccination bovins — 3 ans d'expérience</div>
+        <div class="journal-body">CBPP + FMD en juin et décembre depuis 3 ans. Zéro perte. Je partage mon calendrier complet dans les commentaires.</div>
+        <div style="display:flex;gap:16px;margin-top:11px;font-size:12px;color:var(--on-surface-var);align-items:center">
+          <span style="display:flex;align-items:center;gap:4px"><span class="material-symbols-rounded" style="font-size:16px">chat</span>18</span>
+          <span style="display:flex;align-items:center;gap:4px"><span class="material-symbols-rounded" style="font-size:16px">thumb_up</span>56</span>
+        </div>
+      </div>
+    </div>
+    <div data-tab="videos" style="display:none">
+      <div class="card" style="margin-top:12px">
+        <div class="card-head">Vidéos conseils agricoles</div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">play_circle</span>
+          <div class="row-body"><div class="row-title">Irrigation goutte-à-goutte DIY</div><div class="row-sub">15 min · 2,3k vues · ⭐⭐⭐⭐⭐</div></div>
+          <span class="badge badge-green">Nouveau</span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">play_circle</span>
+          <div class="row-body"><div class="row-title">Compostage naturel en 30 jours</div><div class="row-sub">12 min · 1,8k vues</div></div>
+          <span class="badge badge-green">Populaire</span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">play_circle</span>
+          <div class="row-body"><div class="row-title">Pisciculture Tilapia intensive</div><div class="row-sub">25 min · 4,1k vues</div></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">play_circle</span>
+          <div class="row-body"><div class="row-title">Lire ses résultats d'analyse de sol</div><div class="row-sub">18 min · 900 vues</div></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">play_circle</span>
+          <div class="row-body"><div class="row-title">Gérer sa trésorerie agricole</div><div class="row-sub">20 min · 1,4k vues</div></div>
+        </div>
+      </div>
+    </div>
+    <div data-tab="challenges" style="display:none">
+      <div class="card" style="margin-top:12px">
+        <div class="card-head">
+          <span style="display:flex;align-items:center;gap:8px">
+            <span class="material-symbols-rounded filled" style="font-size:20px;color:var(--tertiary)">emoji_events</span>
+            Challenge en cours — Mai 2026
+          </span>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon">agriculture</span>
+          <div class="row-body"><div class="row-title">Meilleur rendement maïs</div><div class="row-sub">48 participants · Se termine 31 mai</div></div>
+          <span class="badge badge-amber">3ème</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">Classement provisoire</div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon filled" style="color:#D4A017">military_tech</span>
+          <div class="row-body"><div class="row-title">Mwamba K. — 4,8 T/ha</div><div class="row-sub">Région Kasaï</div></div>
+        </div>
+        <div class="row">
+          <span class="material-symbols-rounded row-icon filled" style="color:#A0A0A0">military_tech</span>
+          <div class="row-body"><div class="row-title">Nakamura P. — 4,1 T/ha</div><div class="row-sub">Région Lomami</div></div>
+        </div>
+        <div class="row" style="background:var(--primary-50)">
+          <span class="material-symbols-rounded row-icon filled" style="color:#B87333">military_tech</span>
+          <div class="row-body"><div class="row-title text-green">Vous — 3,2 T/ha (estimé)</div><div class="row-sub">Parcelle A1</div></div>
+          <span class="badge badge-green">Vous</span>
+        </div>
+      </div>
+      <div class="action-list">
+        <button class="action-btn" onclick="askAI('Je suis 3ème dans un challenge rendement maïs avec 3.2T/ha estimé. Le leader est à 4.8T/ha. Mon maïs est en floraison, pH 6.2, phosphore déficient. Que puis-je encore faire pour améliorer mon rendement avant la récolte?')">
+          <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Stratégie pour monter au classement IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     NOTIFICATIONS
+══════════════════════════════════════ -->
+<section class="screen" id="s-notif">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-home')"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Notifications</div><div class="topbar-sub">5 non lues</div></div>
+  </div>
+  <div class="scroll-area">
+    <div class="card">
+      <div class="row" style="background:var(--error-50)">
+        <span class="material-symbols-rounded row-icon filled" style="color:var(--error)">vaccines</span>
+        <div class="row-body"><div class="row-title">Vaccination bovins CBPP</div><div class="row-sub">Due dans 2 jours · 15 animaux</div></div>
+        <span class="badge badge-red">Urgent</span>
+      </div>
+      <div class="row" style="background:var(--tertiary-50)">
+        <span class="material-symbols-rounded row-icon" style="color:var(--tertiary)">rainy</span>
+        <div class="row-body"><div class="row-title">Alerte météo: pluie 45mm demain</div><div class="row-sub">Vérifier drainage parcelle A2</div></div>
+        <span class="badge badge-orange">Météo</span>
+      </div>
+      <div class="row" style="background:var(--tertiary-50)">
+        <span class="material-symbols-rounded row-icon" style="color:var(--tertiary)">inventory_2</span>
+        <div class="row-body"><div class="row-title">Stock NPK critique (27%)</div><div class="row-sub">Commander avant épuisement dans 5j</div></div>
+        <span class="badge badge-orange">Stock</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">compost</span>
+        <div class="row-body"><div class="row-title">Manioc périssable à vendre</div><div class="row-sub">180 kg · 5 jours avant dégradation</div></div>
+        <span class="badge badge-orange">Commerce</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--info)">chat</span>
+        <div class="row-body"><div class="row-title">12 nouvelles réponses forum</div><div class="row-sub">Votre post sur la pisciculture</div></div>
+        <span class="badge badge-blue">Forum</span>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     PANNEAU IA (overlay)
+══════════════════════════════════════ -->
+<div class="ai-panel" id="ai-panel" onclick="closeAI()">
+  <div class="ai-inner" onclick="event.stopPropagation()">
+    <div class="ai-header">
+      <div class="ai-title">
+        <span class="material-symbols-rounded filled">smart_toy</span>
+        Conseil IA — PNDA-Cultura
+      </div>
+      <button class="ai-close" onclick="closeAI()">
+        <span class="material-symbols-rounded" style="font-size:20px">close</span>
+      </button>
+    </div>
+    <div class="ai-output" id="ai-output"></div>
+  </div>
+</div>
+
+</div><!-- .app-shell -->
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
