@@ -125,7 +125,11 @@
      ACCUEIL — Tableau de bord
 ══════════════════════════════════════ -->
 <section class="screen active" id="s-home">
-  <div class="dash-header">
+  <div class="dash-header" style="position:relative;overflow:hidden;padding-bottom:0">
+    <!-- Image illustrative — paysan africain aux champs -->
+    <img src="https://images.unsplash.com/photo-1589923158776-cb4485d99fd6?w=460&h=180&fit=crop&crop=center&auto=format&q=70"
+         alt="Fermier aux champs" aria-hidden="true"
+         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;opacity:0.22;pointer-events:none;z-index:0">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
       <div>
         <div class="dash-greeting">
@@ -139,7 +143,7 @@
         <span class="notif-badge">5</span>
       </button>
     </div>
-    <div class="stat-row">
+    <div class="stat-row" style="position:relative;z-index:1;padding-bottom:18px">
       <div class="stat-pill"><div class="stat-val">4,8 ha</div><div class="stat-lbl">Terres cultivées</div></div>
       <div class="stat-pill"><div class="stat-val">142k FC</div><div class="stat-lbl">Bénéfice net/mois</div></div>
       <div class="stat-pill"><div class="stat-val">5 alertes</div><div class="stat-lbl">En attente</div></div>
@@ -222,6 +226,17 @@
       </div>
     </div>
 
+    <!-- Bannière illustrative paysage agricole -->
+    <div style="margin:4px 14px 12px;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.10);position:relative;height:110px">
+      <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=460&h=120&fit=crop&crop=center&auto=format&q=70"
+           alt="Champs agricoles au Kasaï" style="width:100%;height:100%;object-fit:cover;object-position:center 60%">
+      <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(30,86,49,0.65) 0%,transparent 60%)"></div>
+      <div style="position:absolute;bottom:12px;left:14px;color:white">
+        <div style="font-size:13px;font-weight:700;letter-spacing:-0.01em">Ferme Kalonji — Kasaï</div>
+        <div style="font-size:11px;opacity:0.88;margin-top:2px">4,8 ha · Saison principale en cours</div>
+      </div>
+    </div>
+
     <div class="section-label">Revenus — 6 derniers mois</div>
     <div class="chart-wrap">
       <div class="chart-bars">
@@ -278,12 +293,27 @@
     <span class="topbar-action"><span class="material-symbols-rounded" style="font-size:22px">add</span></span>
   </div>
   <div class="scroll-area">
-    <div class="metric-grid">
+    <!-- Image — culture de maïs Afrique -->
+    <div style="position:relative;height:130px;overflow:hidden">
+      <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=460&h=140&fit=crop&crop=center&auto=format&q=70"
+           alt="Culture de maïs" style="width:100%;height:100%;object-fit:cover;object-position:center 40%">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.45) 100%)"></div>
+      <div style="position:absolute;bottom:10px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-end">
+        <span style="color:white;font-size:12px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,0.5)">🌽 Maïs · 🌾 Riz · 🥬 Manioc · 🥦 Légumes</span>
+      </div>
+    </div>
+    <div class="metric-grid" style="padding-top:10px">
       <div class="metric-card"><div class="metric-label">Surface totale</div><div class="metric-value">4,8 ha</div><div class="metric-sub">4 parcelles actives</div></div>
       <div class="metric-card"><div class="metric-label">Récolte estimée</div><div class="metric-value">2,4 T</div><div class="metric-sub">Ce cycle</div></div>
     </div>
 
     <div class="card">
+      <div style="height:70px;overflow:hidden;position:relative">
+        <img src="https://images.unsplash.com/photo-1601217941742-d88eca7ad082?w=460&h=80&fit=crop&crop=center&auto=format&q=60"
+             alt="Champ de maïs" style="width:100%;height:100%;object-fit:cover;object-position:center 55%">
+        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(30,86,49,0.7),transparent 50%)"></div>
+        <div style="position:absolute;top:50%;left:14px;transform:translateY(-50%);color:white;font-size:13px;font-weight:700">🌽 Maïs — Floraison</div>
+      </div>
       <div class="card-head">
         <span>Parcelle A1 — Maïs</span>
         <span class="card-head-action" onclick="goTo('s-parcelle-detail')">Détails <span class="material-symbols-rounded" style="font-size:16px">arrow_forward</span></span>
@@ -323,6 +353,12 @@
     </div>
 
     <div class="card">
+      <div style="height:70px;overflow:hidden;position:relative">
+        <img src="https://images.unsplash.com/photo-1536657464919-892534f60d6e?w=460&h=80&fit=crop&crop=center&auto=format&q=60"
+             alt="Rizière" style="width:100%;height:100%;object-fit:cover;object-position:center 40%">
+        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(80,60,10,0.7),transparent 55%)"></div>
+        <div style="position:absolute;top:50%;left:14px;transform:translateY(-50%);color:white;font-size:13px;font-weight:700">🌾 Manioc — Récolte proche</div>
+      </div>
       <div class="card-head">Parcelle B1 — Manioc</div>
       <div class="row">
         <span class="material-symbols-rounded row-icon">location_on</span>
@@ -424,7 +460,17 @@
     <div><div class="topbar-title">Élevage</div><div class="topbar-sub">Gestion du troupeau</div></div>
   </div>
   <div class="scroll-area">
-    <div class="metric-grid">
+    <!-- Image — élevage bovin Afrique -->
+    <div style="position:relative;height:120px;overflow:hidden">
+      <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=460&h=130&fit=crop&crop=center&auto=format&q=70"
+           alt="Élevage bovin" style="width:100%;height:100%;object-fit:cover;object-position:center 45%">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(15,50,25,0.55) 100%)"></div>
+      <div style="position:absolute;bottom:10px;left:14px;color:white">
+        <div style="font-size:13px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,0.6)">🐄 15 Bovins · 🐐 5 Chèvres · 🐔 40 Volailles</div>
+        <div style="font-size:11px;opacity:0.9;margin-top:2px">2 alertes sanitaires actives</div>
+      </div>
+    </div>
+    <div class="metric-grid" style="padding-top:10px">
       <div class="metric-card"><div class="metric-label">Total animaux</div><div class="metric-value">60</div><div class="metric-sub">Bovins · Chèvres · Volailles</div></div>
       <div class="metric-card"><div class="metric-label">Alertes santé</div><div class="metric-value" style="color:var(--error)">2</div><div class="metric-sub">Action requise</div></div>
     </div>
@@ -782,6 +828,16 @@
     <div><div class="topbar-title">Prix du Marché</div><div class="topbar-sub">Kasaï · Mis à jour aujourd'hui</div></div>
   </div>
   <div class="scroll-area">
+    <!-- Image — marché africain, vendeurs de produits agricoles -->
+    <div style="position:relative;height:110px;overflow:hidden">
+      <img src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=460&h=120&fit=crop&crop=center&auto=format&q=70"
+           alt="Marché agricole" style="width:100%;height:100%;object-fit:cover;object-position:center 35%">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(15,50,25,0.55) 100%)"></div>
+      <div style="position:absolute;bottom:10px;left:14px;color:white">
+        <div style="font-size:12px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,0.5)">Marché Mbuji-Mayi · Mis à jour aujourd'hui</div>
+        <div style="font-size:11px;opacity:0.9;margin-top:2px">Prix en Francs Congolais (FC)</div>
+      </div>
+    </div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab(this,'prix')">Prix live</button>
       <button class="tab" onclick="switchTab(this,'acheteurs')">Acheteurs</button>
@@ -1189,7 +1245,17 @@
     <div><div class="topbar-title">Pisciculture</div><div class="topbar-sub">Gestion des bassins</div></div>
   </div>
   <div class="scroll-area">
-    <div class="metric-grid">
+    <!-- Image — bassin pisciculture tilapia Afrique -->
+    <div style="position:relative;height:120px;overflow:hidden">
+      <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=460&h=130&fit=crop&crop=center&auto=format&q=70"
+           alt="Bassin pisciculture tilapia" style="width:100%;height:100%;object-fit:cover;object-position:center 50%">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,70,112,0.15) 0%,rgba(15,50,80,0.55) 100%)"></div>
+      <div style="position:absolute;bottom:10px;left:14px;color:white">
+        <div style="font-size:13px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,0.6)">🐟 Bassin Tilapia · 🐠 Bassin Poisson-chat</div>
+        <div style="font-size:11px;opacity:0.9;margin-top:2px">730 poissons · Récolte dans ~45 jours</div>
+      </div>
+    </div>
+    <div class="metric-grid" style="padding-top:10px">
       <div class="metric-card"><div class="metric-label">Poissons total</div><div class="metric-value">730</div><div class="metric-sub">2 espèces · 2 bassins</div></div>
       <div class="metric-card"><div class="metric-label">Récolte estimée</div><div class="metric-value">185 kg</div><div class="metric-sub">Dans ~45 jours</div></div>
     </div>

@@ -52,12 +52,12 @@
   /* Typographie */
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Rayons M3 */
-  --radius-xs:  8px;
-  --radius-sm:  12px;
-  --radius-md:  16px;
-  --radius-lg:  20px;
-  --radius-xl:  28px;
+  /* Rayons — réduits (style plus sobre/terrain) */
+  --radius-xs:  4px;
+  --radius-sm:  6px;
+  --radius-md:  8px;
+  --radius-lg:  10px;
+  --radius-xl:  14px;
   --radius-full: 100px;
 
   /* Élévations M3 */
@@ -75,7 +75,7 @@
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font);
-  background: var(--surface-dim);
+  background: #d8eadc; /* vert tendre — rappel des champs */
   color: var(--on-surface);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -94,11 +94,11 @@ body {
 .app-shell {
   max-width: 460px;
   margin: 0 auto;
-  background: var(--surface);
+  background: #f7faf8; /* blanc très légèrement vert */
   min-height: 100dvh;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--elev-2);
+  box-shadow: 0 0 0 1px rgba(46,107,62,0.12), var(--elev-2);
 }
 
 /* --- Écrans --- */
