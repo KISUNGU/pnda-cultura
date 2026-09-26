@@ -425,6 +425,44 @@ function saveSale() {
   goTo('s-finances');
 }
 
+/* ──────────────────────────────────────────
+   10. CALENDRIER — Planifier un événement
+────────────────────────────────────────── */
+
+function saveCalendarEvent() {
+  const title = document.getElementById('calendar-event-title')?.value?.trim();
+  const date = document.getElementById('calendar-event-date')?.value;
+  const time = document.getElementById('calendar-event-time')?.value || '';
+  const type = document.getElementById('calendar-event-type')?.value || 'Intervention';
+  const location = document.getElementById('calendar-event-location')?.value || 'Général';
+  const notes = document.getElementById('calendar-event-notes')?.value?.trim() || '';
+
+  if (!title || !date) {
+    showToast('Indiquez un intitulé et une date', 'error');
+    return;
+  }
+
+  const events = JSON.parse(localStorage.getItem('calendar_events') || '[]');
+  events.unshift({ id: Date.now(), title, date, time, type, location, notes });
+  localStorage.setItem('calendar_events', JSON.stringify(events));
+  renderCalendarEvents();
+  showToast('Événement planifié ✓');
+  goTo('s-calendrier');
+}
+
+function renderCalendarEvents() {
+  const container = document.getElementById('calendar-user-events');
+  if (!container) return;
+  const events = JSON.parse(localStorage.getItem('calendar_events') || '[]');
+  container.innerHTML = events.map(event => {
+    const date = new Date(`${event.date}T${event.time || '00:00'}`);
+    const formattedDate = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    const details = [formattedDate, event.time, event.location].filter(Boolean).join(' · ');
+    const badgeClass = event.type === 'Semis' ? 'badge-green' : event.type === 'Récolte' ? 'badge-orange' : event.type === 'Préparation' ? 'badge-teal' : 'badge-blue';
+    return `<div class="card calendar-user-event"><div class="row"><span class="material-symbols-rounded row-icon">event</span><div class="row-body"><div class="row-title">${escapeHTML(event.title)}</div><div class="row-sub">${escapeHTML(details)}${event.notes ? ` · ${escapeHTML(event.notes)}` : ''}</div></div><span class="badge ${badgeClass}">${escapeHTML(event.type)}</span></div></div>`;
+  }).join('');
+}
+
 
 /* ──────────────────────────────────────────
    10. RACCOURCIS CLAVIER & GESTES
@@ -478,6 +516,7 @@ function animateCards() {
 document.addEventListener('DOMContentLoaded', () => {
   initSaleForm();
   loadSettings();
+  renderCalendarEvents();
 
   // Délégation : cocher les tâches (hors clic sur un lien/bouton)
   document.addEventListener('click', e => {
@@ -567,7 +606,7 @@ window.PNDA = {
   calcLoan,
   askAI, closeAI, formatAIResponse,
   saveApiKey, loadSettings,
-  saveJournalEntry, saveSale, saveTask,
+  saveJournalEntry, saveSale, saveCalendarEvent, saveTask,
   showToast, animateCards,
   toggleAlerts, exportData, clearData
 };
@@ -593,6 +632,7 @@ if (typeof window !== 'undefined') {
     loadSettings,
     saveJournalEntry,
     saveSale,
+    saveCalendarEvent,
     showToast,
     animateCards
   };
