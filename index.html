@@ -427,7 +427,7 @@
     <div class="action-list">
       <button class="action-btn" onclick="goTo('s-recoltes')"><span class="material-symbols-rounded action-btn-icon">agriculture</span>Suivi des récoltes<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
       <button class="action-btn" onclick="goTo('s-calendrier')"><span class="material-symbols-rounded action-btn-icon">calendar_month</span>Calendrier des semis &amp; récoltes<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
-      <button class="action-btn"><span class="material-symbols-rounded action-btn-icon">biotech</span>Historique des traitements<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="goTo('s-traitements')"><span class="material-symbols-rounded action-btn-icon">biotech</span>Historique des traitements<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
       <button class="action-btn" onclick="askAI('Maïs A1 en floraison 2ha pH6.2, riz A2 à 35% 1.8ha risque érosion, manioc B1 prêt à récolter 0.5ha. Quelles sont mes 3 priorités cette semaine?')">
         <span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Analyse IA de mes parcelles<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span>
       </button>
@@ -436,6 +436,75 @@
   <nav class="bottom-nav">
     <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
     <button class="nav-btn active"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
+    <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
+    <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
+    <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
+  </nav>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     HISTORIQUE DES TRAITEMENTS
+══════════════════════════════════════ -->
+<section class="screen" id="s-traitements">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('s-parcelles')" aria-label="Retour aux parcelles"><span class="material-symbols-rounded" style="font-size:20px">arrow_back</span></button>
+    <div><div class="topbar-title">Historique des traitements</div><div class="topbar-sub">Interventions phytosanitaires</div></div>
+    <button class="topbar-action" onclick="goTo('s-newjournal')" aria-label="Ajouter un traitement"><span class="material-symbols-rounded" style="font-size:22px">add</span></button>
+  </div>
+  <div class="scroll-area">
+    <div class="metric-grid" style="padding-top:14px">
+      <div class="metric-card"><div class="metric-label">Ce cycle</div><div class="metric-value">3</div><div class="metric-sub">Traitements réalisés</div></div>
+      <div class="metric-card"><div class="metric-label">Dernière intervention</div><div class="metric-value">28 avr.</div><div class="metric-sub">NPK sur parcelle A1</div></div>
+    </div>
+
+    <div class="section-label">Toutes les interventions</div>
+    <div class="card">
+      <div class="card-head"><span>Parcelle A1 — Maïs</span><span class="badge badge-green">3 interventions</span></div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--primary)">science</span>
+        <div class="row-body"><div class="row-title">NPK 20-10-10 appliqué</div><div class="row-sub">28 avr. 2026 · 50 kg/ha · Floraison</div></div>
+        <span class="badge badge-green">Terminé</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--info)">water_drop</span>
+        <div class="row-body"><div class="row-title">Irrigation goutte-à-goutte</div><div class="row-sub">2 mai 2026 · 3 heures · Sol à 68%</div></div>
+        <span class="badge badge-green">Terminé</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--tertiary)">bug_report</span>
+        <div class="row-body"><div class="row-title">Traitement chenilles légionnaires</div><div class="row-sub">20 avr. 2026 · Pyréthrine 2 L/ha</div></div>
+        <span class="badge badge-green">Terminé</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span>Parcelle A2 — Riz</span><span class="badge badge-orange">À surveiller</span></div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon" style="color:var(--tertiary)">water_drop</span>
+        <div class="row-body"><div class="row-title">Drainage préventif</div><div class="row-sub">À faire avant la pluie de 45 mm · Risque érosion</div></div>
+        <span class="badge badge-orange">À faire</span>
+      </div>
+      <div class="row">
+        <span class="material-symbols-rounded row-icon">visibility</span>
+        <div class="row-body"><div class="row-title">Inspection sanitaire</div><div class="row-sub">Dernière visite : 3 mai 2026</div></div>
+        <span class="badge badge-blue">Planifié</span>
+      </div>
+    </div>
+
+    <div class="alert-banner info">
+      <span class="material-symbols-rounded alert-icon filled">inventory_2</span>
+      <div><div class="alert-title">Stock de pyréthrine faible</div><div class="alert-msg">Il reste 2,5 L. Vérifier le stock avant toute nouvelle application.</div></div>
+    </div>
+
+    <div class="action-list">
+      <button class="action-btn" onclick="goTo('s-newjournal')"><span class="material-symbols-rounded action-btn-icon">add_circle</span>Enregistrer une intervention<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+      <button class="action-btn" onclick="askAI('Historique traitements: NPK 20-10-10 sur maïs A1 le 28 avril, irrigation le 2 mai, pyréthrine contre chenilles le 20 avril. Riz A2 avec risque érosion. Quels traitements ou interventions prévoir cette semaine?')"><span class="material-symbols-rounded action-btn-icon filled">smart_toy</span>Analyser mon historique avec l'IA<span class="material-symbols-rounded action-btn-arrow">arrow_forward</span></button>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goTo('s-home')"><span class="material-symbols-rounded nav-icon">home</span><span class="nav-label">Accueil</span></button>
+    <button class="nav-btn active" onclick="goTo('s-parcelles')"><span class="material-symbols-rounded nav-icon">grass</span><span class="nav-label">Cultures</span></button>
     <button class="nav-btn" onclick="goTo('s-finances')"><span class="material-symbols-rounded nav-icon">savings</span><span class="nav-label">Finances</span></button>
     <button class="nav-btn" onclick="goTo('s-marche')"><span class="material-symbols-rounded nav-icon">trending_up</span><span class="nav-label">Marché</span></button>
     <button class="nav-btn" onclick="goTo('s-comm')"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-label">Forum</span></button>
